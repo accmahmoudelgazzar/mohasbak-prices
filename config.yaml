@@ -1,0 +1,43 @@
+# Radar config — daily prices page («محاسبك»)
+# The operator updates the "manual" fields. Fields NOT updated keep their last
+# good value and their date is NOT advanced (the script never invents numbers).
+# Fuel values are static until the pricing committee changes them (expected Dec 2026).
+
+blog:
+  blog_id: "1302262100063666035"
+  # page_id: Blogger page id of «أسعار اليوم في مصر» — verified 2026-11-12 18:30.
+  page_id: "356166536423189256"
+
+manual:
+  # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
+  # Dated: 2026-11-12 (press relay — filcatalog/mobtada/masrtimes agree).
+  usd_cbe_buy: 53.4869
+  usd_cbe_sell: 53.6246
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-12.
+  usd_bank_buy: 53.50
+  usd_bank_sell: 53.60
+  # EGX close — dated 2026-11-11 (Wednesday close). Update after 14:30 close.
+  egx30: 52500.47
+  egx70: 18447.21
+  egx100: 24459.90
+  # Food commodities (Cabinet portal via Al-Masry Al-Youm) — dated 2026-11-12.
+  food_rice: 35.18
+  food_sugar: 35.68
+  food_sunflower: 107.78
+  food_corn: 128.10
+  food_flour: 27.53
+  food_beans: 61.81
+
+# Static fuel table (committee decision 15 Oct 2026, valid to 31 Dec 2026).
+fuel:
+  f80: 20.75
+  f92: 22.25
+  f95: 24.00
+  diesel: 20.50
+  butane: 275
+  cng: 13
+
+validation:
+  max_gold_move_pct: 5.0
+  max_usd_move_pct: 2.0
+  max_theory_deviation_pct: 3.0
