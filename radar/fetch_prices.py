@@ -459,7 +459,7 @@ def main():
     hh = now_cairo.strftime("%I:%M")
     ap = "ص" if now_cairo.hour < 12 else "م"
     stamp = f"{wd} {now_cairo.day} {mo} {now_cairo.year} — {hh} {ap}"
-    next_update = "15:30" if hour < 12 else "09:00 (غداً)"
+    next_update = "16:00" if hour < 12 else "09:00 (غداً)"
     snapshot = {
         "date": now_cairo.strftime("%Y-%m-%d"),
         "stamp_cairo": stamp,
