@@ -10,23 +10,24 @@ blog:
 
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-12 (press relay — filcatalog/mobtada/masrtimes agree).
-  usd_cbe_buy: 53.4869
-  usd_cbe_sell: 53.6246
-  # Bank rates (NBE / Banque Misr) — dated 2026-11-12.
-  usd_bank_buy: 53.50
-  usd_bank_sell: 53.60
-  # EGX close — dated 2026-11-11 (Wednesday close). Update after 14:30 close.
-  egx30: 52500.47
-  egx70: 18447.21
-  egx100: 24459.90
-  # Food commodities (Cabinet portal via Al-Masry Al-Youm) — dated 2026-11-12.
-  food_rice: 35.18
-  food_sugar: 35.68
-  food_sunflower: 107.78
-  food_corn: 128.10
-  food_flour: 27.53
-  food_beans: 61.81
+  # Dated: 2026-11-13 (press relay — Youm7/Watan/Veto/Aleqaria agree 53.36/53.50;
+  # minority 53.38/53.48 in Elfolos/Ahl Masr).
+  usd_cbe_buy: 53.36
+  usd_cbe_sell: 53.50
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-13 (Thu close, banks closed Fri-Sat).
+  usd_bank_buy: 53.39
+  usd_bank_sell: 53.49
+  # EGX close — dated 2026-11-12 (Thursday close, last session of the week).
+  egx30: 52023.37
+  egx70: 18527.43
+  egx100: 24493.99
+  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-13.
+  food_rice: 34.59
+  food_sugar: 35.01
+  food_sunflower: 99.30
+  food_corn: 127.50
+  food_flour: 27.25
+  food_beans: 60.10
 
 # Static fuel table (committee decision 15 Oct 2026, valid to 31 Dec 2026).
 fuel:
