@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Daily prices radar for the «محاسبك» Blogger page (mohasbak.blogspot.com).
-Free, stdlib-only Python. Run by GitHub Actions twice daily (09:00 + 15:30 Cairo).
+Free, stdlib-only Python. Run by GitHub Actions twice daily (09:00 + 16:00 Cairo).
 
 What it does:
   1. Fetches XAUS (gold/silver spot, EGP/gram), open.er-api (USD mid-market),
@@ -21,6 +21,7 @@ What it does:
 Usage:
   python3 fetch_prices.py --dry-run        # fetch + validate + write JSON only
   python3 fetch_prices.py --publish        # also update the Blogger page
+  Add --force to bypass the Friday/Saturday afternoon skip (manual runs).
 Env (publish mode): BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET,
   BLOGGER_REFRESH_TOKEN, BLOG_ID, PAGE_ID, COINGECKO_DEMO_KEY (optional).
 """
@@ -305,7 +306,7 @@ def render_html(snapshot):
     set_cell("btc-egp", fmt(vals["btc_egp"]))
     set_cell("eth-usd", fmt(vals["eth_usd"]))
     set_cell("eth-egp", fmt(vals["eth_egp"]))
-    # EGX (yesterday's close until the 15:30 snapshot)
+    # EGX (yesterday's close until the 16:00 snapshot)
     set_cell("egx30", fmt(vals["egx30"]))
     set_cell("egx70", fmt(vals["egx70"]))
     set_cell("egx100", fmt(vals["egx100"]))
@@ -352,13 +353,15 @@ def blogger_update_page(blog_id, page_id, html, token):
 def main():
     dry_run = "--dry-run" in sys.argv
     publish = "--publish" in sys.argv
+    force = "--force" in sys.argv
     if not (dry_run or publish):
-        print("Usage: fetch_prices.py --dry-run | --publish")
+        print("Usage: fetch_prices.py --dry-run | --publish [--force]")
         return 2
     now_cairo = datetime.now(CAIRO)
     hour = now_cairo.hour
-    # Friday (4) / Saturday (5): morning snapshot only — skip the 15:30 run.
-    if now_cairo.weekday() in (4, 5) and hour >= 12:
+    # Friday (4) / Saturday (5): morning snapshot only — skip the 16:00 run.
+    # --force bypasses this (explicit manual runs only).
+    if not force and now_cairo.weekday() in (4, 5) and hour >= 12:
         log("Friday/Saturday afternoon run skipped (morning snapshot only).")
         return 0
 
