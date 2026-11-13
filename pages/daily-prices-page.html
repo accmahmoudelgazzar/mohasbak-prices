@@ -20,41 +20,101 @@
 .dp-stamp{background:#1a1a1a;color:#fff;border-radius:8px;padding:10px 14px;font-size:14px;text-align:center;margin:10px 0}
 .dp-stamp b{color:#ffd166}
 .dp-btn{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:15px;cursor:pointer;font-family:inherit}
+.dp-live{border:2px solid #2563eb;border-radius:10px;padding:10px 14px;margin:10px 0;background:#f0f5ff}
+.dp-live .t{font-weight:700;font-size:15px}
+.dp-live .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#16a34a;margin-left:6px}
+.dp-live-items{display:flex;flex-wrap:wrap;gap:6px 18px;margin:6px 0 2px 0;font-size:15px}
+.dp-live-items b{direction:ltr;unicode-bidi:embed}
+.dp-live-note{font-size:12px;color:#666;margin:4px 0 0 0}
+.dp-live-err{color:#b91c1c;font-weight:700;display:none}
 .dp-input{border:1px solid #ccc;border-radius:8px;padding:8px 10px;font-size:15px;width:160px;font-family:inherit}
 </style>
 
 <h1 style="font-size:26px;margin:0 0 6px 0;">أسعار اليوم في مصر — الذهب والدولار والوقود والسلع</h1>
 <p style="color:#555;margin:0 0 10px 0;">أسعار استرشادية من مصادرها الرسمية والتجارية الموثوقة — تُحدَّث مرتين يومياً، وليست أسعاراً لحظية.</p>
 
-<div class="dp-stamp" id="dp-stamp">آخر تحديث: <b>الخميس 12 نوفمبر 2026 — 08:23 م</b> بتوقيت القاهرة &nbsp;|&nbsp; التحديث التالي: <b>09:00 (غداً)</b> &nbsp;|&nbsp; الأسعار بدون مصنعية أو دمغة أو ضريبة</div>
+<!-- شريط الأسعار اللحظية (يُحدَّث في متصفح الزائر كل 60 ثانية — لا يمس جداول اللقطات ولا توقيتاتها) -->
+<div class="dp-live" id="dp-live">
+<div class="t"><span class="dot"></span> أسعار لحظية — تُحدَّث كل دقيقة</div>
+<div class="dp-live-items">
+<span>بيتكوين: <b id="live-btc">…</b></span>
+<span>إيثريوم: <b id="live-eth">…</b></span>
+<span>دولار وسطي: <b id="live-usd">…</b></span>
+<span>الأونصة: <b id="live-oz">…</b></span>
+<span>تقدير عيار 21: <b id="live-g21">…</b></span>
+</div>
+<p class="dp-live-note">الشريط أعلاه تقديرات لحظية استرشادية من مصادر عامة مفتوحة (CoinGecko وopen.er-api وXAUS) — والجداول أدناه لقطات موثَّقة بتوقيتها. تقدير عيار 21 = الأونصة × الدولار الوسطي × (21÷24) ÷ 31.1035، وهو <b>تقدير استرشادي لحظي — وليس سعر الصاغة</b>. <span id="live-err" class="dp-live-err">تعذّر التحديث اللحظي — تُعرض آخر قيم معروفة.</span> <span id="live-time"></span></p>
+</div>
+<script>
+(function(){
+  var last={};
+  function fmt(n,d){return Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+  function set(id,txt){var el=document.getElementById(id);if(el){el.textContent=txt;}}
+  function showErr(on){var el=document.getElementById('live-err');if(el){el.style.display=on?'inline':'none';}}
+  function tick(){
+    Promise.allSettled([
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd').then(function(r){return r.json();}),
+      fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json();}),
+      fetch('https://xaus.com/api/v1/spot?currency=EGP&unit=gram').then(function(r){return r.json();})
+    ]).then(function(res){
+      var ok=true;
+      if(res[0].status==='fulfilled'&&res[0].value&&res[0].value.bitcoin&&res[0].value.ethereum){
+        last.btc=res[0].value.bitcoin.usd; last.eth=res[0].value.ethereum.usd;
+      } else { ok=false; }
+      if(res[1].status==='fulfilled'&&res[1].value&&res[1].value.rates&&res[1].value.rates.EGP){
+        last.usd=res[1].value.rates.EGP;
+      } else { ok=false; }
+      if(res[2].status==='fulfilled'&&res[2].value&&res[2].value.spot_usd_oz){
+        last.oz=res[2].value.spot_usd_oz;
+      } else { ok=false; }
+      if(last.btc){set('live-btc','$'+fmt(last.btc,0));}
+      if(last.eth){set('live-eth','$'+fmt(last.eth,2));}
+      if(last.usd){set('live-usd',fmt(last.usd,2)+' ج');}
+      if(last.oz){set('live-oz','$'+fmt(last.oz,2));}
+      if(last.oz&&last.usd){
+        set('live-g21',fmt(last.oz*last.usd*(21/24)/31.1035,0)+' ج');
+      }
+      showErr(!ok);
+      if(ok){
+        var d=new Date();
+        set('live-time','آخر تحديث لحظي: '+d.getHours()+':'+('0'+d.getMinutes()).slice(-2));
+      }
+    });
+  }
+  tick();
+  setInterval(tick,60000);
+})();
+</script>
+
+<div class="dp-stamp" id="dp-stamp">آخر تحديث: <b>الخميس 12 نوفمبر 2026 — 11:38 ص</b> بتوقيت القاهرة &nbsp;|&nbsp; التحديث التالي: <b>16:00</b> &nbsp;|&nbsp; الأسعار بدون مصنعية أو دمغة أو ضريبة</div>
 
 <div style="text-align:center;">
-  <div class="dp-card"><div class="l">عيار 21 (بيع)</div><div class="v" id="card-g21">5,975 ج</div></div>
-  <div class="dp-card"><div class="l">دولار — البنك المركزي (بيع)</div><div class="v" id="card-usd">53.6246 ج</div></div>
+  <div class="dp-card"><div class="l">عيار 21 (بيع)</div><div class="v" id="card-g21">6,050 ج</div></div>
+  <div class="dp-card"><div class="l">دولار — البنك المركزي (بيع)</div><div class="v" id="card-usd">53.62 ج</div></div>
   <div class="dp-card"><div class="l">بنزين 92</div><div class="v" id="card-f92">22.25 ج</div></div>
-  <div class="dp-card"><div class="l">بيتكوين</div><div class="v" id="card-btc">$71,812</div></div>
+  <div class="dp-card"><div class="l">بيتكوين</div><div class="v" id="card-btc">$73,378</div></div>
 </div>
 
-<div class="dp-note">هذه الصفحة <b>لقطتان يومياً (09:00 و16:00 بتوقيت القاهرة)</b> وليست بثاً لحظياً — أي تحرك بين اللقطتين يظهر في اللقطة التالية، ويُكتب وقت كل لقطة فوق الجدول. الاستثناء الوحيد: سعر الأونصة العالمية في الأسفل، وهو ودجت حي استرشادي.</div>
+<div class="dp-note">هذه الصفحة <b>لقطتان يومياً (09:00 و16:00 بتوقيت القاهرة)</b> — الجداول أدناه لقطات موثَّقة وليست بثاً لحظياً، وأي تحرك بين اللقطتين يظهر في اللقطة التالية، ويُكتب وقت كل لقطة فوق الجدول. الشريط اللحظي في الأعلى وسعر الأونصة العالمية في الأسفل ودجتات حيّة استرشادية.</div>
 
 <!-- 1) الذهب -->
 <div class="dp-sec" id="sec-gold">
 <h2>1) سعر الذهب في مصر</h2>
 <table class="dp-table">
 <tr><th>العيار</th><th>شراء (جنيه/جرام)</th><th>بيع (جنيه/جرام)</th><th>التغير عن الأمس</th></tr>
-<tr><td>عيار 24</td><td class="dp-num" id="g24-buy">6,771.50</td><td class="dp-num" id="g24-sell">6,828.50</td><td>−0.8%</td></tr>
-<tr><td>عيار 21</td><td class="dp-num" id="g21-buy">5,925</td><td class="dp-num" id="g21-sell">5,975</td><td>−0.8%</td></tr>
-<tr><td>عيار 18</td><td class="dp-num" id="g18-buy">5,078.50</td><td class="dp-num" id="g18-sell">5,121.50</td><td>−0.8%</td></tr>
-<tr><td>جنيه ذهب (8 جرام عيار 21)</td><td class="dp-num" id="gp-buy">47,400</td><td class="dp-num" id="gp-sell">47,800</td><td>−0.8%</td></tr>
+<tr><td>عيار 24</td><td class="dp-num" id="g24-buy">6,857.25</td><td class="dp-num" id="g24-sell">6,914.25</td><td>−0.8%</td></tr>
+<tr><td>عيار 21</td><td class="dp-num" id="g21-buy">6,000</td><td class="dp-num" id="g21-sell">6,050</td><td>−0.8%</td></tr>
+<tr><td>عيار 18</td><td class="dp-num" id="g18-buy">5,142.75</td><td class="dp-num" id="g18-sell">5,185.75</td><td>−0.8%</td></tr>
+<tr><td>جنيه ذهب (8 جرام عيار 21)</td><td class="dp-num" id="gp-buy">48,000</td><td class="dp-num" id="gp-sell">48,400</td><td>−0.8%</td></tr>
 </table>
 <p class="dp-src">المصدر: <a href="https://market.isagha.com" target="_blank" rel="noopener">آي صاغة (iSagha)</a> — آخر تحديث للسعر: 11:24 ص بتوقيت القاهرة. الأسعار بدون مصنعية أو دمغة أو ضريبة.</p>
-<p style="font-size:14px;color:#555;">للتقاطع: سعر الأونصة العالمية الآن <span id="xau-oz" style="font-weight:700;">$3,879.90</span> (القيمة النظرية لجرام 24 من الأونصة: <span id="xau-gram-egp" style="font-weight:700;">6,679.94 جنيه</span>) — والعلاوة المحلية عن النظري نحو 2%.</p>
+<p style="font-size:14px;color:#555;">للتقاطع: سعر الأونصة العالمية الآن <span id="xau-oz" style="font-weight:700;">$3,938.10</span> (القيمة النظرية لجرام 24 من الأونصة: <span id="xau-gram-egp" style="font-weight:700;">6,780.14 جنيه</span>) — والعلاوة المحلية عن النظري نحو 2%.</p>
 </div>
 
 <!-- حاسبة الجرامات -->
 <div class="dp-sec" id="sec-calc" style="background:#f7f7f7;border-radius:10px;padding:14px 16px;">
 <h2 style="border:none;padding:0;">حاسبة سريعة: معك كام جنيه؟</h2>
-<p style="font-size:14px;color:#555;margin:4px 0 10px 0;">يجيبوا كام جرام ذهب عيار 21 بسعر البيع الحالي (<span id="calc-price">5,975</span> جنيه للجرام)؟</p>
+<p style="font-size:14px;color:#555;margin:4px 0 10px 0;">يجيبوا كام جرام ذهب عيار 21 بسعر البيع الحالي (<span id="calc-price">6,050</span> جنيه للجرام)؟</p>
 <input class="dp-input" id="calc-amount" type="number" min="0" placeholder="اكتب المبلغ بالجنيه" /> 
 <button class="dp-btn" onclick="var a=parseFloat(document.getElementById('calc-amount').value);var p=parseFloat(document.getElementById('g21-sell').textContent.replace(/,/g,''));var r=document.getElementById('calc-result');if(!a||a<=0||!p){r.textContent='اكتب مبلغاً صحيحاً.';}else{r.textContent='≈ '+(a/p).toFixed(2)+' جرام عيار 21 (بدون مصنعية).';}">احسب</button>
 <p id="calc-result" style="font-weight:700;margin:10px 0 0 0;"></p>
@@ -67,7 +127,7 @@
 <table class="dp-table">
 <tr><th>العملة</th><th>شراء (جنيه)</th><th>بيع (جنيه)</th><th>ملاحظة</th></tr>
 <tr><td>دولار أمريكي — البنك المركزي</td><td class="dp-num" id="usd-cbe-buy">53.4869</td><td class="dp-num" id="usd-cbe-sell">53.6246</td><td>سعر رسمي (عبر الصحف اليوم)</td></tr>
-<tr><td>دولار أمريكي — البنوك (الأهلي / مصر)</td><td class="dp-num" id="usd-bank-buy">53.5</td><td class="dp-num" id="usd-bank-sell">53.6</td><td>سعر البنوك صباح اليوم</td></tr>
+<tr><td>دولار أمريكي — البنوك (الأهلي / مصر)</td><td class="dp-num" id="usd-bank-buy">53.50</td><td class="dp-num" id="usd-bank-sell">53.60</td><td>سعر البنوك صباح اليوم</td></tr>
 <tr><td>يورو</td><td class="dp-num" colspan="2" id="eur-mid">59.51 (وسطي)</td><td>سعر وسطي استرشادي</td></tr>
 <tr><td>جنيه إسترليني</td><td class="dp-num" colspan="2" id="gbp-mid">71.17 (وسطي)</td><td>سعر وسطي استرشادي</td></tr>
 <tr><td>ريال سعودي</td><td class="dp-num" colspan="2" id="sar-mid">14.28 (وسطي)</td><td>سعر وسطي استرشادي</td></tr>
@@ -83,11 +143,11 @@
 <h2>3) سعر الفضة في مصر</h2>
 <table class="dp-table">
 <tr><th>العيار</th><th>شراء (جنيه/جرام)</th><th>بيع (جنيه/جرام)</th><th>التغير عن الأمس</th></tr>
-<tr><td>فضة 999</td><td class="dp-num" id="s999-buy">88.00</td><td class="dp-num" id="s999-sell">90.75</td><td>−1.0%</td></tr>
-<tr><td>فضة 925</td><td class="dp-num" id="s925-buy">81.50</td><td class="dp-num" id="s925-sell">84.00</td><td>−1.0%</td></tr>
-<tr><td>فضة 800</td><td class="dp-num" id="s800-buy">70.50</td><td class="dp-num" id="s800-sell">72.75</td><td>−1.0%</td></tr>
+<tr><td>فضة 999</td><td class="dp-num" id="s999-buy">89.75</td><td class="dp-num" id="s999-sell">93</td><td>−1.0%</td></tr>
+<tr><td>فضة 925</td><td class="dp-num" id="s925-buy">83.25</td><td class="dp-num" id="s925-sell">86</td><td>−1.0%</td></tr>
+<tr><td>فضة 800</td><td class="dp-num" id="s800-buy">72</td><td class="dp-num" id="s800-sell">74.5</td><td>−1.0%</td></tr>
 </table>
-<p class="dp-src">المصدر: <a href="https://market.isagha.com" target="_blank" rel="noopener">آي صاغة (iSagha)</a> — آخر تحديث للسعر: 11:24 ص بتوقيت القاهرة. سعر الأونصة العالمية للفضة الآن: <span id="xau-silver-oz" style="font-weight:700;">$50.27</span>.</p>
+<p class="dp-src">المصدر: <a href="https://market.isagha.com" target="_blank" rel="noopener">آي صاغة (iSagha)</a> — آخر تحديث للسعر: 11:24 ص بتوقيت القاهرة. سعر الأونصة العالمية للفضة الآن: <span id="xau-silver-oz" style="font-weight:700;">$51.22</span>.</p>
 </div>
 
 <!-- 4) الوقود -->
@@ -125,8 +185,8 @@
 <h2>6) أسعار العملات الرقمية</h2>
 <table class="dp-table">
 <tr><th>العملة</th><th>السعر (دولار)</th><th>السعر (جنيه)</th></tr>
-<tr><td>بيتكوين (BTC)</td><td class="dp-num" id="btc-usd">71,812</td><td class="dp-num" id="btc-egp">3,837,506</td></tr>
-<tr><td>إيثريوم (ETH)</td><td class="dp-num" id="eth-usd">2,015.33</td><td class="dp-num" id="eth-egp">107,696</td></tr>
+<tr><td>بيتكوين (BTC)</td><td class="dp-num" id="btc-usd">73,378</td><td class="dp-num" id="btc-egp">3,930,160</td></tr>
+<tr><td>إيثريوم (ETH)</td><td class="dp-num" id="eth-usd">2,043.52</td><td class="dp-num" id="eth-egp">109,451</td></tr>
 </table>
 <p class="dp-src">المصدر: CoinGecko — «Data provided by CoinGecko» (<a href="https://www.coingecko.com/" target="_blank" rel="noopener">coingecko.com</a>). الأسعار لحظة الجلب (11:38 ص) وتتغير باستمرار — القيم بالجنيه محسوبة بسعر الدولار الوسطي 53.55.</p>
 </div>
@@ -157,7 +217,7 @@
 <div class="dp-sec" id="sec-how">
 <h2>كيف تُحسب الأسعار؟ ولماذا تختلف من موقع لآخر؟</h2>
 <p>سعر الذهب المحلي = سعر الأونصة العالمي بالدولار × سعر الدولار مقابل الجنيه × نقاء العيار، + <b>علاوة محلية</b> (فرق السوق المصري عن العالمي — نحو 2% في لقطة اليوم). العلاوة هي سبب اختلاف المصادر عن بعضها في الصباح نفسه (50–135 جنيهاً لعيار 21 في 12 نوفمبر). لذلك نعرض <b>مصدراً واحداً ثابتاً (آي صاغة) + وقت اللقطة</b>، ولا ندّعي أن سعرنا هو «السعر الوحيد الصحيح».</p>
-<p>أسعار العملات: سعر الدولار الرسمي من البنك المركزي، وأسعار البنوك الكبرى (الأهلي/مصر)، والعملات الأخرى بسعر وسطي استرشادي من مجمّع أسعار الصرافة — وليست أسعار شراء/بيع بنكية.</p>
+<p>أسعار العملات: سعر الدولار الرسمي من البنك المركزي، وأسعار البنوك الكبرى (الأهلي/مصر)، والعملات الأخرى بسعر وسطي استرشادي من مجمّع أسعار الصرف — وليست أسعار شراء/بيع بنكية.</p>
 </div>
 
 <!-- أسئلة شائعة -->
