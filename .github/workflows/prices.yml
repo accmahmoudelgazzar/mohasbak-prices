@@ -5,23 +5,33 @@
 #   summer: 06:00 UTC = 09:00 Cairo, 13:00 UTC = 16:00 Cairo
 # Adjust the cron in April/October when Egypt changes clocks (see README).
 name: Daily prices radar
+
 on:
   schedule:
-    - cron: "0 7 * * *"  # 09:00 Cairo (winter)
-    - cron: "0 14 * * *"  # 16:00 Cairo (winter)
+    - cron: "0 7 * * *"    # 09:00 Cairo (winter)
+    - cron: "0 14 * * *"   # 16:00 Cairo (winter)
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Force publish even on Friday/Saturday afternoon (bypasses the morning-only skip)"
+        type: boolean
+        default: false
+
 permissions:
   contents: write
+
 jobs:
   update-prices:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Fetch + validate + update Blogger page
         env:
           BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
@@ -30,7 +40,11 @@ jobs:
           BLOG_ID: ${{ secrets.BLOG_ID }}
           PAGE_ID: ${{ secrets.PAGE_ID }}
           COINGECKO_DEMO_KEY: ${{ secrets.COINGECKO_DEMO_KEY }}
-        run: python3 radar/fetch_prices.py --publish
+        run: |
+          ARGS="--publish"
+          if [ "${{ inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          python3 radar/fetch_prices.py $ARGS
+
       - name: Commit price archive
         run: |
           git config user.name "prices-radar"
