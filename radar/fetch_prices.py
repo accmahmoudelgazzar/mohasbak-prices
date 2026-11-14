@@ -236,6 +236,26 @@ def load_previous():
         return json.load(f)
 
 
+def morning_snapshot_exists():
+    """True if today's 09:00 run already archived a snapshot.
+
+    The Fri/Sat afternoon skip keys off this, not the wall clock: a
+    delayed morning run, or an afternoon run on a day whose morning run
+    never fired, must still publish instead of leaving the page stale.
+    Snapshots written before this field existed (e.g. manual runs) do
+    not count as a morning snapshot.
+    """
+    today = datetime.now(CAIRO).strftime("%Y-%m-%d")
+    path = os.path.join(DATA_DIR, f"prices-{today}.json")
+    if not os.path.isfile(path):
+        return False
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f).get("run_slot") == "morning"
+    except (OSError, ValueError):
+        return False
+
+
 def check_range(key, value):
     lo, hi = RANGES[key]
     if not (lo <= value <= hi):
@@ -359,10 +379,15 @@ def main():
         return 2
     now_cairo = datetime.now(CAIRO)
     hour = now_cairo.hour
-    # Friday (4) / Saturday (5): morning snapshot only — skip the 16:00 run.
-    # --force bypasses this (explicit manual runs only).
-    if not force and now_cairo.weekday() in (4, 5) and hour >= 12:
-        log("Friday/Saturday afternoon run skipped (morning snapshot only).")
+    # Friday (4) / Saturday (5): morning snapshot only — skip the afternoon
+    # run ONLY if today's 09:00 snapshot already exists. A delayed morning
+    # run, or an afternoon run on a day whose morning run never fired
+    # (e.g. GitHub schedule delay), must still publish instead of leaving
+    # the page on an old snapshot all day. --force bypasses this too
+    # (explicit manual runs only).
+    if (not force and now_cairo.weekday() in (4, 5) and hour >= 12
+            and morning_snapshot_exists()):
+        log("Friday/Saturday afternoon run skipped (morning snapshot already published).")
         return 0
 
     cfg = load_config()
@@ -466,6 +491,7 @@ def main():
     snapshot = {
         "date": now_cairo.strftime("%Y-%m-%d"),
         "stamp_cairo": stamp,
+        "run_slot": "morning" if hour < 12 else "afternoon",
         "next_update": next_update,
         "values": vals,
         "notes": notes,
