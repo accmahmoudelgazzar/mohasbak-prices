@@ -236,6 +236,54 @@ def load_previous():
         return json.load(f)
 
 
+def load_yesterday():
+    """Latest snapshot whose date is BEFORE today (Cairo), or None.
+
+    The «change vs yesterday» column must compare against yesterday's
+    close, not against this morning's run (the daily archive file is
+    overwritten by the afternoon run, so load_previous() alone would
+    give the wrong baseline for the afternoon run).
+    """
+    if not os.path.isdir(DATA_DIR):
+        return None
+    today = datetime.now(CAIRO).strftime("%Y-%m-%d")
+    files = sorted(f for f in os.listdir(DATA_DIR)
+                   if f.startswith("prices-") and f.endswith(".json")
+                   and f[7:17] < today)
+    if not files:
+        return None
+    with open(os.path.join(DATA_DIR, files[-1]), encoding="utf-8") as f:
+        return json.load(f)
+
+
+def pct_change(new, old):
+    """Percent change of new vs old sell price, or None if uncomputable."""
+    if new is None or old in (None, 0):
+        return None
+    return (new - old) / old * 100
+
+
+CHANGE_KEYS = ("g24_sell", "g21_sell", "g18_sell", "gp_sell",
+               "s999_sell", "s925_sell", "s800_sell")
+
+
+def compute_changes(vals, yest_vals):
+    """{value-key: pct-change vs yesterday's snapshot} (None if no baseline)."""
+    if not yest_vals:
+        return {k: None for k in CHANGE_KEYS}
+    return {k: pct_change(vals.get(k), yest_vals.get(k)) for k in CHANGE_KEYS}
+
+
+def fmt_chg(pct):
+    """Format a change cell: +1.2% / −0.8% / 0.0% / — (no baseline)."""
+    if pct is None:
+        return "—"
+    if pct == 0:
+        return "0.0%"
+    sign = "+" if pct > 0 else "−"
+    return f"{sign}{abs(pct):.1f}%"
+
+
 def morning_snapshot_exists():
     """True if today's 09:00 run already archived a snapshot.
 
@@ -321,6 +369,14 @@ def render_html(snapshot):
         set_cell(f"s{code}-buy", fmt(vals[f"s{code}_buy"]))
         set_cell(f"s{code}-sell", fmt(vals[f"s{code}_sell"]))
     set_cell("xau-silver-oz", f"${fmt(vals['silver_usd_oz'])}")
+    # Change vs yesterday («التغير عن الأمس» — was hardcoded in the template)
+    changes = snapshot.get("changes", {})
+    chg_cells = {"g24_sell": "g24-chg", "g21_sell": "g21-chg",
+                 "g18_sell": "g18-chg", "gp_sell": "gp-chg",
+                 "s999_sell": "s999-chg", "s925_sell": "s925-chg",
+                 "s800_sell": "s800-chg"}
+    for key, cell in chg_cells.items():
+        set_cell(cell, fmt_chg(changes.get(key)))
     # Crypto
     set_cell("btc-usd", fmt(vals["btc_usd"]))
     set_cell("btc-egp", fmt(vals["btc_egp"]))
@@ -345,6 +401,13 @@ def render_html(snapshot):
         html, count=1)
     if n == 0:
         log("WARNING: stamp div not found")
+    # Per-source «last updated» times (were hardcoded 11:24 / 11:38 on 12 Nov)
+    run_hhmm = snapshot.get("run_hhmm")
+    if run_hhmm:
+        html = re.sub(r"آخر تحديث للسعر: [^<]*? بتوقيت القاهرة",
+                      f"آخر تحديث للسعر: {run_hhmm} بتوقيت القاهرة", html)
+        html = re.sub(r"الأسعار لحظة الجلب \([^)]*\)",
+                      f"الأسعار لحظة الجلب ({run_hhmm})", html)
     return html
 
 
@@ -488,6 +551,11 @@ def main():
     ap = "ص" if now_cairo.hour < 12 else "م"
     stamp = f"{wd} {now_cairo.day} {mo} {now_cairo.year} — {hh} {ap}"
     next_update = "16:00" if hour < 12 else "09:00 (غداً)"
+    # Change vs yesterday (for the «التغير عن الأمس» column) + run time
+    # (for the per-source «آخر تحديث للسعر» lines, which were hardcoded).
+    yest = load_yesterday()
+    changes = compute_changes(vals, yest["values"] if yest else {})
+    run_hhmm = f"{hh} {ap}"
     snapshot = {
         "date": now_cairo.strftime("%Y-%m-%d"),
         "stamp_cairo": stamp,
@@ -495,6 +563,8 @@ def main():
         "next_update": next_update,
         "values": vals,
         "notes": notes,
+        "changes": changes,
+        "run_hhmm": run_hhmm,
     }
 
     # Archive JSON
