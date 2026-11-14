@@ -1,13 +1,13 @@
 {
   "date": "2026-11-14",
-  "stamp_cairo": "السبت 14 نوفمبر 2026 — 03:57 م",
+  "stamp_cairo": "السبت 14 نوفمبر 2026 — 05:06 م",
   "run_slot": "afternoon",
   "next_update": "09:00 (غداً)",
   "values": {
     "gold_usd_oz": 3887.6,
     "gold_egp_gram_24k": 6679.06,
     "silver_usd_oz": 48.65,
-    "btc_usd_xaus": 66763,
+    "btc_usd_xaus": 65905,
     "usd_egp_mid": 53.437041,
     "eur_mid": 58.98,
     "gbp_mid": 70.64,
@@ -28,10 +28,10 @@
     "s925_sell": 84.0,
     "s800_buy": 70.5,
     "s800_sell": 72.75,
-    "btc_usd": 66766,
-    "btc_egp": 3572099,
-    "eth_usd": 1891.15,
-    "eth_egp": 101180,
+    "btc_usd": 65828,
+    "btc_egp": 3521927,
+    "eth_usd": 1850.43,
+    "eth_egp": 99002,
     "usd_cbe_buy": 53.36,
     "usd_cbe_sell": 53.5,
     "usd_bank_buy": 53.39,
@@ -46,5 +46,15 @@
     "food_flour": 27.25,
     "food_beans": 60.1
   },
-  "notes": []
+  "notes": [],
+  "changes": {
+    "g24_sell": -0.4173683825144614,
+    "g21_sell": -0.41841004184100417,
+    "g18_sell": -0.4197988870448111,
+    "gp_sell": -0.41841004184100417,
+    "s999_sell": 0.0,
+    "s925_sell": 0.0,
+    "s800_sell": 0.0
+  },
+  "run_hhmm": "05:06 م"
 }
