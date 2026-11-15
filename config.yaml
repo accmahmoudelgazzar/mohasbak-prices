@@ -3,24 +3,25 @@
 # good value and their date is NOT advanced (the script never invents numbers).
 # Fuel values are static until the pricing committee changes them (expected Dec 2026).
 
+
 blog:
   blog_id: "1302262100063666035"
   # page_id: Blogger page id of «أسعار اليوم في مصر» — verified 2026-11-12 18:30.
   page_id: "356166536423189256"
 
+
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-13 (press relay — Youm7/Watan/Veto/Aleqaria agree 53.36/53.50;
-  # minority 53.38/53.48 in Elfolos/Ahl Masr).
-  usd_cbe_buy: 53.36
-  usd_cbe_sell: 53.50
-  # Bank rates (NBE / Banque Misr) — dated 2026-11-13 (Thu close, banks closed Fri-Sat).
-  usd_bank_buy: 53.39
-  usd_bank_sell: 53.49
-  # EGX close — dated 2026-11-12 (Thursday close, last session of the week).
-  egx30: 52023.37
-  egx70: 18527.43
-  egx100: 24493.99
+  # Dated: 2026-11-15 (Sunday close — El Balad/Aleqaria/Veto agree 53.72/53.86).
+  usd_cbe_buy: 53.72
+  usd_cbe_sell: 53.86
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-15 (Sunday close).
+  usd_bank_buy: 53.74
+  usd_bank_sell: 53.84
+  # EGX close — dated 2026-11-15 (Sunday close).
+  egx30: 52187.21
+  egx70: 18732.51
+  egx100: 24737.02
   # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-13.
   food_rice: 34.59
   food_sugar: 35.01
@@ -28,6 +29,7 @@ manual:
   food_corn: 127.50
   food_flour: 27.25
   food_beans: 60.10
+
 
 # Static fuel table (committee decision 15 Oct 2026, valid to 31 Dec 2026).
 fuel:
@@ -37,6 +39,7 @@ fuel:
   diesel: 20.50
   butane: 275
   cng: 13
+
 
 validation:
   max_gold_move_pct: 5.0
