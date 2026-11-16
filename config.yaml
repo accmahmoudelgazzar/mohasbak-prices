@@ -3,8 +3,8 @@
 # good value and their date is NOT advanced (the script never invents numbers).
 # Fuel values are static until the pricing committee changes them (expected Dec 2026).
 
-
 blog:
+
   blog_id: "1302262100063666035"
   # page_id: Blogger page id of «أسعار اليوم في مصر» — verified 2026-11-12 18:30.
   page_id: "356166536423189256"
@@ -12,30 +12,29 @@ blog:
 
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-15 (Sunday close — El Balad/Aleqaria/Veto agree 53.72/53.86).
-  usd_cbe_buy: 53.72
-  usd_cbe_sell: 53.86
-  # Bank rates (NBE / Banque Misr) — dated 2026-11-15 (Sunday close).
-  usd_bank_buy: 53.74
-  usd_bank_sell: 53.84
-  # EGX close — dated 2026-11-15 (Sunday close).
+  # Dated: 2026-11-16 (Monday close — El Balad/Aleqaria/Veto agree 53.62/53.75).
+  usd_cbe_buy: 53.62
+  usd_cbe_sell: 53.75
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-16 (Monday close).
+  usd_bank_buy: 53.63
+  usd_bank_sell: 53.73
+  # EGX close — dated 2026-11-16 (Monday close).
   # egx_date MUST be updated together with these three values — the page header
   # («إغلاق …») and the change column show this date, and the script never
   # advances it on its own. Format: YYYY-MM-DD.
-  egx_date: "2026-11-15"
-  egx30: 52187.21
-  egx70: 18732.51
-  egx100: 24737.02
-  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-13.
-  food_rice: 34.59
-  food_sugar: 35.01
-  food_sunflower: 99.30
+  egx_date: "2026-11-16"
+  egx30: 52199.83
+  egx70: 18028.42
+  egx100: 24023.77
+  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-16 (Monday close).
+  food_rice: 34.86
+  food_sugar: 33.36
+  food_sunflower: 104.79
   food_corn: 127.50
-  food_flour: 27.25
-  food_beans: 60.10
+  food_flour: 27.32
+  food_beans: 62.91
 
-
-# Static fuel table (committee decision 15 Oct 2026, valid to 31 Dec 2026).
+  # Static fuel table (committee decision 15 Oct 2026, valid to 31 Dec 2026).
 fuel:
   f80: 20.75
   f92: 22.25
@@ -44,8 +43,9 @@ fuel:
   butane: 275
   cng: 13
 
-
 validation:
   max_gold_move_pct: 5.0
   max_usd_move_pct: 2.0
   max_theory_deviation_pct: 3.0
+
+
