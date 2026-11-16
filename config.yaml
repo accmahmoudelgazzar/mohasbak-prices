@@ -19,6 +19,10 @@ manual:
   usd_bank_buy: 53.74
   usd_bank_sell: 53.84
   # EGX close — dated 2026-11-15 (Sunday close).
+  # egx_date MUST be updated together with these three values — the page header
+  # («إغلاق …») and the change column show this date, and the script never
+  # advances it on its own. Format: YYYY-MM-DD.
+  egx_date: "2026-11-15"
   egx30: 52187.21
   egx70: 18732.51
   egx100: 24737.02
