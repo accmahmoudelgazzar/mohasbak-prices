@@ -264,7 +264,8 @@ def pct_change(new, old):
 
 
 CHANGE_KEYS = ("g24_sell", "g21_sell", "g18_sell", "gp_sell",
-               "s999_sell", "s925_sell", "s800_sell", "egx30", "egx70", "egx100")
+               "s999_sell", "s925_sell", "s800_sell",
+               "egx30", "egx70", "egx100")
 
 
 def compute_changes(vals, yest_vals):
@@ -285,30 +286,32 @@ def fmt_chg(pct):
 
 
 AR_WEEKDAYS = ("الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد")
-AR_MONTHS = ("يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر")
+AR_MONTHS = ("يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو",
+             "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر")
 
 
 def format_ar_date(iso_date):
-      try:
-                d = datetime.strptime(iso_date, "%Y-%m-%d").date()
-except (TypeError, ValueError):
+    """«2026-11-15» -> «الأحد 15 نوفمبر 2026» (None if unparseable)."""
+    try:
+        d = datetime.strptime(iso_date, "%Y-%m-%d").date()
+    except (TypeError, ValueError):
         return None
     return f"{AR_WEEKDAYS[d.weekday()]} {d.day} {AR_MONTHS[d.month - 1]} {d.year}"
 
 
 def next_trading_day(iso_date):
-      try:
+    """Next EGX trading day (Sun–Thu) after the given close date, as ISO."""
+    try:
         d = datetime.strptime(iso_date, "%Y-%m-%d").date()
-      except (TypeError, ValueError):
-                return None
-            d += timedelta(days=1)
-    while d.weekday() in (4, 5):
-              d += timedelta(days=1)
-          return d.strftime("%Y-%m-%d")
+    except (TypeError, ValueError):
+        return None
+    d += timedelta(days=1)
+    while d.weekday() in (4, 5):  # Friday / Saturday — market closed
+        d += timedelta(days=1)
+    return d.strftime("%Y-%m-%d")
 
 
-
-        def morning_snapshot_exists():
+def morning_snapshot_exists():
     """True if today's 09:00 run already archived a snapshot.
 
     The Fri/Sat afternoon skip keys off this, not the wall clock: a
@@ -410,16 +413,21 @@ def render_html(snapshot):
     set_cell("egx30", fmt(vals["egx30"]))
     set_cell("egx70", fmt(vals["egx70"]))
     set_cell("egx100", fmt(vals["egx100"]))
-        egx_label = format_ar_date(snapshot.get("egx_date")) if snapshot.get("egx_date") else None
-                                           if egx_label:
-                                               set_cell("egx-close-th", f"إغلاق {egx_label}")
-                                               for key, cell in (("egx30", "egx30-chg"), ("egx70", "egx70-chg"), ("egx100", "egx100-chg")):
-                                                   set_cell(cell, fmt_chg(changes.get(key)))
-            nxt_label = format_ar_date(next_trading_day(snapshot["egx_date"]))
-            if nxt_label:
-                              set_cell("egx-src", f"المصدر: البورصة المصرية — إغلاق جلسة {egx_label} (التداول الأحد–الخميس 10:00–14:30). الجلسة التالية {nxt_label}.")
-            else:
-                          log("WARNING: no valid egx_date in snapshot — EGX header left as-is")
+    # EGX header + change column + source line. These were hardcoded
+    # «إغلاق الخميس 12 نوفمبر» + Thursday's %s since the page was built:
+    # every run updated the three values and never touched the date.
+    # egx_date comes from config.yaml (manual) and is never advanced here.
+    egx_label = format_ar_date(snapshot.get("egx_date")) if snapshot.get("egx_date") else None
+    if egx_label:
+        set_cell("egx-close-th", f"إغلاق {egx_label}")
+        for key, cell in (("egx30", "egx30-chg"), ("egx70", "egx70-chg"),
+                          ("egx100", "egx100-chg")):
+            set_cell(cell, fmt_chg(changes.get(key)))
+        nxt_label = format_ar_date(next_trading_day(snapshot["egx_date"]))
+        if nxt_label:
+            set_cell("egx-src", f"المصدر: البورصة المصرية — إغلاق جلسة {egx_label} (التداول الأحد–الخميس 10:00–14:30). الجلسة التالية {nxt_label}.")
+    else:
+        log("WARNING: no valid egx_date in snapshot — EGX header left as-is")
     # Food
     set_cell("food-rice", fmt(vals["food_rice"]))
     set_cell("food-sugar", fmt(vals["food_sugar"]))
@@ -590,13 +598,15 @@ def main():
     yest = load_yesterday()
     changes = compute_changes(vals, yest["values"] if yest else {})
     run_hhmm = f"{hh} {ap}"
+    # EGX close date (manual, config.yaml) — drives the page's EGX header.
+    # Never derived from today: the values keep their last good close until
+    # the operator updates them, and the date must stay with those values.
     egx_date = manual.get("egx_date")
     if egx_date and not format_ar_date(egx_date):
-              log(f"WARNING: egx_date {egx_date!r} is not YYYY-MM-DD — EGX header will not be updated")
-              egx_date = None
-      snapshot = {
+        log(f"WARNING: egx_date {egx_date!r} is not YYYY-MM-DD — EGX header will not be updated")
+        egx_date = None
+    snapshot = {
         "date": now_cairo.strftime("%Y-%m-%d"),
-                "egx_date": egx_date,
         "stamp_cairo": stamp,
         "run_slot": "morning" if hour < 12 else "afternoon",
         "next_update": next_update,
@@ -604,6 +614,7 @@ def main():
         "notes": notes,
         "changes": changes,
         "run_hhmm": run_hhmm,
+        "egx_date": egx_date,
     }
 
     # Archive JSON
