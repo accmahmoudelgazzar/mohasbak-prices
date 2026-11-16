@@ -410,7 +410,7 @@ def render_html(snapshot):
     set_cell("egx30", fmt(vals["egx30"]))
     set_cell("egx70", fmt(vals["egx70"]))
     set_cell("egx100", fmt(vals["egx100"]))
-        egx_label = format_ar_date(snapshot.get("egx_date") if snapshot.get("egx_date") else None
+        egx_label = format_ar_date(snapshot.get("egx_date")) if snapshot.get("egx_date") else None
                                            if egx_label:
                                                set_cell("egx-close-th", f"إغلاق {egx_label}")
                                                for key, cell in (("egx30", "egx30-chg"), ("egx70", "egx70-chg"), ("egx100", "egx100-chg")):
