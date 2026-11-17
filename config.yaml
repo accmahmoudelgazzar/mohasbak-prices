@@ -9,6 +9,15 @@ blog:
   # page_id: Blogger page id of «أسعار اليوم في مصر» — verified 2026-11-12 18:30.
   page_id: "356166536423189256"
 
+guide:
+  # INERT record (documentation only — the script never reads this block,
+  # same as `blog:` above; the live IDs come from the GUIDE_BLOG_ID /
+  # GUIDE_PAGE_ID secrets). Guide blog «دليل كل حاجة».
+  blog_id: "3576572750368597138"
+  # page_id: Blogger page id of «أسعار اليوم في القاهرة» — filled in once
+  # the page is created on the Guide blog (PLACEHOLDER until then).
+  page_id: "6714317575238257796"
+
 
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
@@ -33,6 +42,34 @@ manual:
   food_corn: 127.50
   food_flour: 27.32
   food_beans: 62.91
+  # Obour wholesale prices (EGP/kg) — dated 2026-11-17 (Tuesday).
+  # Source: the market's official site, as carried daily by Masrawy
+  # (the official site URL itself is still unconfirmed — no auto-scraper
+  # until it is resolved; until then these fields are manual like food/CBE).
+  # obour_date MUST be updated together with these values — the Obour
+  # section header shows this date, and the script never advances it.
+  # Format: YYYY-MM-DD. Ranges are wholesale; retail runs ~5–10 EGP/kg higher.
+  obour_date: "2026-11-17"
+  obour_tomato_lo: 10
+  obour_tomato_hi: 15
+  obour_potato_lo: 14
+  obour_potato_hi: 22
+  obour_white_onion_lo: 17
+  obour_white_onion_hi: 21
+  obour_red_onion_lo: 17
+  obour_red_onion_hi: 21
+  obour_zucchini_lo: 8
+  obour_zucchini_hi: 18
+  obour_baladi_cucumber_lo: 9
+  obour_baladi_cucumber_hi: 15
+  obour_romaine_pepper_lo: 6
+  obour_romaine_pepper_hi: 12
+  obour_baladi_orange_lo: 11
+  obour_baladi_orange_hi: 15
+  obour_baladi_lemon_lo: 12
+  obour_baladi_lemon_hi: 20
+  obour_tilapia_lo: 71
+  obour_tilapia_hi: 75
 
   # Static fuel table (committee decision 15 Oct 2026, valid to 31 Dec 2026).
 fuel:

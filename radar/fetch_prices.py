@@ -1,29 +1,34 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Daily prices radar for the «محاسبك» Blogger page (mohasbak.blogspot.com).
-Free, stdlib-only Python. Run by GitHub Actions twice daily (09:00 + 16:00 Cairo).
+Daily prices radar for the «محاسبك» Blogger page (mohasbak.blogspot.com)
+AND the «دليل كل حاجة» page «أسعار اليوم في القاهرة»
+(daleel-kolhaga.blogspot.com). Free, stdlib-only Python. Run by GitHub
+Actions twice daily (09:00 + 16:00 Cairo).
 
 What it does:
   1. Fetches XAUS (gold/silver spot, EGP/gram), open.er-api (USD mid-market),
      iSagha (Egypt gold/silver buy/sell, HTML), CBE (best effort, WAF may block),
      CoinGecko (BTC/ETH, Demo key if present else keyless).
-  2. Reads manual fields (CBE buy/sell, bank rates, food, EGX close, fuel)
-     from config.yaml — the operator updates them; if absent, last good values
-     are kept and their date is NOT advanced.
+  2. Reads manual fields (CBE buy/sell, bank rates, food, EGX close, Obour
+     wholesale) from config.yaml — the operator updates them; if absent,
+     last good values are kept and their date is NOT advanced.
   3. Validates everything (sanity ranges, gold change < 5%, USD change < 2%,
-     iSagha vs theoretical (XAUS x USD) within 3%). On validation failure it
-     exits non-zero and publishes NOTHING.
-  4. Renders the Blogger page HTML (id-based replacement in pages/daily-prices-page.html),
-     archives data/prices-YYYY-MM-DD.json, and (unless --dry-run) updates the
-     Blogger page via Blogger API v3 pages.update.
+     Obour change < 40%, iSagha vs theoretical (XAUS x USD) within 3%).
+     On validation failure it exits non-zero and publishes NOTHING to
+     EITHER page.
+  4. Renders both Blogger page HTMLs (id-based replacement in
+     pages/daily-prices-page.html and pages/guide-daily-prices-page.html),
+     archives data/prices-YYYY-MM-DD.json, and (unless --dry-run) updates
+     both Blogger pages via Blogger API v3 pages.update.
 
 Usage:
-  python3 fetch_prices.py --dry-run        # fetch + validate + write JSON only
-  python3 fetch_prices.py --publish        # also update the Blogger page
+  python3 fetch_prices.py --dry-run        # fetch + validate + render both, no publish
+  python3 fetch_prices.py --publish        # also update both Blogger pages
   Add --force to bypass the Friday/Saturday afternoon skip (manual runs).
 Env (publish mode): BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET,
-  BLOGGER_REFRESH_TOKEN, BLOG_ID, PAGE_ID, COINGECKO_DEMO_KEY (optional).
+  BLOGGER_REFRESH_TOKEN, BLOG_ID, PAGE_ID, GUIDE_BLOG_ID, GUIDE_PAGE_ID,
+  COINGECKO_DEMO_KEY (optional).
 """
 import json
 import os
@@ -52,10 +57,28 @@ RANGES = {
     "usd_mid": (40, 70), "usd_cbe_buy": (40, 70), "usd_cbe_sell": (40, 70),
     "btc_usd": (10000, 300000), "eth_usd": (100, 20000),
     "egx30": (10000, 100000),
+    # Obour wholesale (EGP/kg): lo 1–60 / hi 1–120 per item; tilapia pricier.
+    "obour_tomato_lo": (1, 60), "obour_tomato_hi": (1, 120),
+    "obour_potato_lo": (1, 60), "obour_potato_hi": (1, 120),
+    "obour_white_onion_lo": (1, 60), "obour_white_onion_hi": (1, 120),
+    "obour_red_onion_lo": (1, 60), "obour_red_onion_hi": (1, 120),
+    "obour_zucchini_lo": (1, 60), "obour_zucchini_hi": (1, 120),
+    "obour_baladi_cucumber_lo": (1, 60), "obour_baladi_cucumber_hi": (1, 120),
+    "obour_romaine_pepper_lo": (1, 60), "obour_romaine_pepper_hi": (1, 120),
+    "obour_baladi_orange_lo": (1, 60), "obour_baladi_orange_hi": (1, 120),
+    "obour_baladi_lemon_lo": (1, 60), "obour_baladi_lemon_hi": (1, 120),
+    "obour_tilapia_lo": (20, 200), "obour_tilapia_hi": (20, 200),
 }
+
+# Obour items (config keys obour_<item>_lo / obour_<item>_hi;
+# template ids ob-<item>-lo / ob-<item>-hi, with _ kept as - in ids).
+OBOUR_ITEMS = ("tomato", "potato", "white_onion", "red_onion", "zucchini",
+               "baladi_cucumber", "romaine_pepper", "baladi_orange",
+               "baladi_lemon", "tilapia")
 
 MAX_GOLD_MOVE_PCT = 5.0     # vs previous snapshot
 MAX_USD_MOVE_PCT = 2.0      # vs previous snapshot
+MAX_OBOUR_MOVE_PCT = 40.0   # vs previous snapshot (wholesale moves fast)
 MAX_THEORY_DEVIATION_PCT = 3.0  # iSagha vs XAUS theoretical
 
 
@@ -348,10 +371,15 @@ def check_move(key, new, prev, max_pct):
         raise ValueError(f"Move check failed: {key} {old} -> {new} ({pct:.2f}% > {max_pct}%)")
 
 
-def render_html(snapshot):
-    """Replace values inside elements by id in the stored page HTML."""
-    page_path = os.path.join(PAGES_DIR, "daily-prices-page.html")
-    with open(page_path, encoding="utf-8") as f:
+def render_html(snapshot, template_path, page_kind):
+    """Replace values inside elements by id in the given page template.
+
+    page_kind is "mohasbak" or "guide". The Guide template drops the EGX
+    and crypto sections (and the bitcoin quick card), so each kind gets
+    its own cell list — reusing the محاسبك list blindly would spam a
+    WARNING per missing id on every Guide run.
+    """
+    with open(template_path, encoding="utf-8") as f:
         html = f.read()
     vals = snapshot["values"]
 
@@ -371,10 +399,11 @@ def render_html(snapshot):
             log(f"WARNING: element id={el_id} not found in page HTML")
         html = new_html
 
-    # Quick cards
+    # Quick cards (shared, except the bitcoin card — محاسبك only)
     set_cell("card-g21", f"{fmt(vals['g21_sell'])} ج")
     set_cell("card-usd", f"{vals['usd_cbe_sell']} ج")
-    set_cell("card-btc", f"${fmt(vals['btc_usd'])}")
+    if page_kind == "mohasbak":
+        set_cell("card-btc", f"${fmt(vals['btc_usd'])}")
     # Gold
     for c in ("24", "21", "18"):
         set_cell(f"g{c}-buy", fmt(vals[f"g{c}_buy"]))
@@ -404,30 +433,49 @@ def render_html(snapshot):
                  "s800_sell": "s800-chg"}
     for key, cell in chg_cells.items():
         set_cell(cell, fmt_chg(changes.get(key)))
-    # Crypto
-    set_cell("btc-usd", fmt(vals["btc_usd"]))
-    set_cell("btc-egp", fmt(vals["btc_egp"]))
-    set_cell("eth-usd", fmt(vals["eth_usd"]))
-    set_cell("eth-egp", fmt(vals["eth_egp"]))
-    # EGX (yesterday's close until the 16:00 snapshot)
-    set_cell("egx30", fmt(vals["egx30"]))
-    set_cell("egx70", fmt(vals["egx70"]))
-    set_cell("egx100", fmt(vals["egx100"]))
-    # EGX header + change column + source line. These were hardcoded
-    # «إغلاق الخميس 12 نوفمبر» + Thursday's %s since the page was built:
-    # every run updated the three values and never touched the date.
-    # egx_date comes from config.yaml (manual) and is never advanced here.
-    egx_label = format_ar_date(snapshot.get("egx_date")) if snapshot.get("egx_date") else None
-    if egx_label:
-        set_cell("egx-close-th", f"إغلاق {egx_label}")
-        for key, cell in (("egx30", "egx30-chg"), ("egx70", "egx70-chg"),
-                          ("egx100", "egx100-chg")):
-            set_cell(cell, fmt_chg(changes.get(key)))
-        nxt_label = format_ar_date(next_trading_day(snapshot["egx_date"]))
-        if nxt_label:
-            set_cell("egx-src", f"المصدر: البورصة المصرية — إغلاق جلسة {egx_label} (التداول الأحد–الخميس 10:00–14:30). الجلسة التالية {nxt_label}.")
-    else:
-        log("WARNING: no valid egx_date in snapshot — EGX header left as-is")
+    if page_kind == "mohasbak":
+        # Crypto
+        set_cell("btc-usd", fmt(vals["btc_usd"]))
+        set_cell("btc-egp", fmt(vals["btc_egp"]))
+        set_cell("eth-usd", fmt(vals["eth_usd"]))
+        set_cell("eth-egp", fmt(vals["eth_egp"]))
+        # EGX (yesterday's close until the 16:00 snapshot)
+        set_cell("egx30", fmt(vals["egx30"]))
+        set_cell("egx70", fmt(vals["egx70"]))
+        set_cell("egx100", fmt(vals["egx100"]))
+        # EGX header + change column + source line. These were hardcoded
+        # «إغلاق الخميس 12 نوفمبر» + Thursday's %s since the page was built:
+        # every run updated the three values and never touched the date.
+        # egx_date comes from config.yaml (manual) and is never advanced here.
+        egx_label = format_ar_date(snapshot.get("egx_date")) if snapshot.get("egx_date") else None
+        if egx_label:
+            set_cell("egx-close-th", f"إغلاق {egx_label}")
+            for key, cell in (("egx30", "egx30-chg"), ("egx70", "egx70-chg"),
+                              ("egx100", "egx100-chg")):
+                set_cell(cell, fmt_chg(changes.get(key)))
+            nxt_label = format_ar_date(next_trading_day(snapshot["egx_date"]))
+            if nxt_label:
+                set_cell("egx-src", f"المصدر: البورصة المصرية — إغلاق جلسة {egx_label} (التداول الأحد–الخميس 10:00–14:30). الجلسة التالية {nxt_label}.")
+        else:
+            log("WARNING: no valid egx_date in snapshot — EGX header left as-is")
+    elif page_kind == "guide":
+        # Obour wholesale (Guide only). obour_date comes from config.yaml
+        # (manual) and is never advanced here — it must stay with the values.
+        ob_label = format_ar_date(snapshot.get("obour_date")) if snapshot.get("obour_date") else None
+        if ob_label:
+            set_cell("ob-date", ob_label)
+        else:
+            log("WARNING: no valid obour_date in snapshot — Obour header left as-is")
+
+        def fmt_int(v):
+            if v is None:
+                return "—"
+            return f"{v:,.0f}" if isinstance(v, (int, float)) else str(v)
+
+        for item in OBOUR_ITEMS:
+            cell_item = item.replace("_", "-")
+            set_cell(f"ob-{cell_item}-lo", fmt_int(vals.get(f"obour_{item}_lo")))
+            set_cell(f"ob-{cell_item}-hi", fmt_int(vals.get(f"obour_{item}_hi")))
     # Food
     set_cell("food-rice", fmt(vals["food_rice"]))
     set_cell("food-sugar", fmt(vals["food_sugar"]))
@@ -552,10 +600,13 @@ def main():
     fetch_cbe()  # best effort only; CBE buy/sell come from the manual field.
 
     # --- Manual fields (operator updates config.yaml) ---
+    obour_keys = []
+    for _item in OBOUR_ITEMS:
+        obour_keys += [f"obour_{_item}_lo", f"obour_{_item}_hi"]
     for key in ("usd_cbe_buy", "usd_cbe_sell", "usd_bank_buy", "usd_bank_sell",
                 "egx30", "egx70", "egx100",
                 "food_rice", "food_sugar", "food_sunflower", "food_corn",
-                "food_flour", "food_beans"):
+                "food_flour", "food_beans") + tuple(obour_keys):
         if key in manual and manual[key] not in ("", None):
             vals[key] = manual[key]
         else:
@@ -567,11 +618,15 @@ def main():
         log("FATAL: no gold values at all (first run needs a baseline snapshot).")
         return 1
     for key in ("g21_buy", "g21_sell", "g24_buy", "g24_sell",
-                "usd_cbe_buy", "usd_cbe_sell", "btc_usd", "eth_usd", "egx30"):
+                "usd_cbe_buy", "usd_cbe_sell", "btc_usd", "eth_usd", "egx30") + tuple(obour_keys):
         if vals.get(key) is not None:
             check_range(key, vals[key])
     check_move("g21_sell", vals["g21_sell"], prev_vals, MAX_GOLD_MOVE_PCT)
     check_move("usd_cbe_sell", vals["usd_cbe_sell"], prev_vals, MAX_USD_MOVE_PCT)
+    for _item in OBOUR_ITEMS:
+        _key = f"obour_{_item}_hi"
+        if vals.get(_key) is not None:
+            check_move(_key, vals[_key], prev_vals, MAX_OBOUR_MOVE_PCT)
     # iSagha vs theoretical (XAUS gram x purity) — only when iSagha was
     # fetched FRESH this run. On a fallback to last-good values the check
     # would compare stale iSagha vs live XAUS and false-fail on a normal
@@ -605,6 +660,14 @@ def main():
     if egx_date and not format_ar_date(egx_date):
         log(f"WARNING: egx_date {egx_date!r} is not YYYY-MM-DD — EGX header will not be updated")
         egx_date = None
+    # Obour date (manual, config.yaml) — drives the Guide page's Obour
+    # section header. Never derived from today: the values keep their last
+    # good date until the operator updates them, and the date must stay
+    # with those values.
+    obour_date = manual.get("obour_date")
+    if obour_date and not format_ar_date(obour_date):
+        log(f"WARNING: obour_date {obour_date!r} is not YYYY-MM-DD — Obour header will not be updated")
+        obour_date = None
     snapshot = {
         "date": now_cairo.strftime("%Y-%m-%d"),
         "stamp_cairo": stamp,
@@ -615,6 +678,7 @@ def main():
         "changes": changes,
         "run_hhmm": run_hhmm,
         "egx_date": egx_date,
+        "obour_date": obour_date,
     }
 
     # Archive JSON
@@ -626,23 +690,42 @@ def main():
     if notes:
         log("Notes: " + "; ".join(notes))
 
-    html = render_html(snapshot)
+    # Two targets, one snapshot: render both pages from the same values.
+    # A validation failure above already aborted the run, so a failure
+    # here still publishes NOTHING to either page (shared fail-closed gate).
+    targets = [
+        {"blog_id": os.environ.get("BLOG_ID"), "page_id": os.environ.get("PAGE_ID"),
+         "template": os.path.join(PAGES_DIR, "daily-prices-page.html"),
+         "kind": "mohasbak", "name": "محاسبك"},
+        {"blog_id": os.environ.get("GUIDE_BLOG_ID"), "page_id": os.environ.get("GUIDE_PAGE_ID"),
+         "template": os.path.join(PAGES_DIR, "guide-daily-prices-page.html"),
+         "kind": "guide", "name": "الدليل"},
+    ]
+    rendered = []
+    for t in targets:
+        rendered.append((t, render_html(snapshot, t["template"], t["kind"])))
+        log(f"Rendered {t['name']} page from {os.path.basename(t['template'])}")
     if dry_run:
-        log("DRY RUN: HTML rendered, Blogger NOT updated.")
+        log("DRY RUN: both pages rendered, Blogger NOT updated.")
         return 0
 
-    # Publish via Blogger API v3 pages.update
+    # Publish via Blogger API v3 pages.update — both pages, one token.
+    # Missing/placeholder Guide ids fail the whole run before any PUT.
+    for t in targets:
+        if not t["blog_id"] or not t["page_id"] or t["page_id"] == "PLACEHOLDER":
+            raise ValueError(
+                f"Missing Blogger target for {t['name']}: check "
+                f"{'BLOG_ID/PAGE_ID' if t['kind'] == 'mohasbak' else 'GUIDE_BLOG_ID/GUIDE_PAGE_ID'}")
     token = blogger_access_token(
         os.environ["BLOGGER_CLIENT_ID"], os.environ["BLOGGER_CLIENT_SECRET"],
         os.environ["BLOGGER_REFRESH_TOKEN"])
-    res = blogger_update_page(os.environ["BLOG_ID"], os.environ["PAGE_ID"],
-                              html, token)
-    log(f"Blogger page updated: {res.get('url', res.get('id'))}")
-    # Keep the rendered copy in the repo as well.
-    os.makedirs(PAGES_DIR, exist_ok=True)
-    with open(os.path.join(PAGES_DIR, "daily-prices-page.html"), "w",
-              encoding="utf-8") as f:
-        f.write(html)
+    for t, html in rendered:
+        res = blogger_update_page(t["blog_id"], t["page_id"], html, token)
+        log(f"Blogger page updated ({t['name']}): {res.get('url', res.get('id'))}")
+        # Keep the rendered copy in the repo as well.
+        os.makedirs(PAGES_DIR, exist_ok=True)
+        with open(t["template"], "w", encoding="utf-8") as f:
+            f.write(html)
     return 0
 
 

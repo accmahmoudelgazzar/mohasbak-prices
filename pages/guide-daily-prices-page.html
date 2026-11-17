@@ -1,0 +1,273 @@
+<!-- صفحة أسعار اليوم في القاهرة — مدونة «دليل كل حاجة» (daleel-kolhaga.blogspot.com) -->
+<!-- لصق هذا الكود في محرر HTML لصفحة Blogger جديدة على مدونة «دليل كل حاجة». العنوان المقترح: «أسعار اليوم في القاهرة» -->
+<!-- كل خلية سعر تحمل id ثابتاً ليحدّثها الرادار دون لمس باقي الصفحة. قسم العبور يدوي يومي، وقسم المواصلات جداول ثابتة تتغير بقرار رسمي فقط. -->
+<div dir="rtl" lang="ar" style="font-family:'IBM Plex Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif;color:#1a1a1a;background:#ffffff;max-width:760px;margin:0 auto;line-height:1.8;">
+<style>
+.dp-table{width:100%;border-collapse:collapse;margin:8px 0 4px 0;font-size:16px}
+.dp-table th{background:#1a1a1a;color:#fff;padding:8px 10px;text-align:right;font-weight:700}
+.dp-table td{border:1px solid #e5e5e5;padding:8px 10px;text-align:right}
+.dp-table tr:nth-child(even) td{background:#f7f7f7}
+.dp-num{font-weight:700;font-size:17px;direction:ltr;text-align:left}
+.dp-sec{margin:28px 0}
+.dp-sec h2{color:#1a1a1a;border-right:4px solid #2563eb;padding-right:10px;font-size:21px;margin:0 0 6px 0}
+.dp-src{font-size:13px;color:#666;margin:2px 0 0 0}
+.dp-src a{color:#2563eb}
+.dp-note{background:#f0f5ff;border:1px solid #cfe0ff;border-radius:8px;padding:10px 14px;font-size:14px;margin:10px 0}
+.dp-warn{background:#fff7e6;border:1px solid #ffd98a;border-radius:8px;padding:10px 14px;font-size:14px;margin:10px 0}
+.dp-card{display:inline-block;min-width:150px;border:1px solid #e5e5e5;border-radius:10px;padding:10px 14px;margin:4px;text-align:center}
+.dp-card .v{font-size:22px;font-weight:800;color:#1a1a1a;direction:ltr}
+.dp-card .l{font-size:13px;color:#666}
+.dp-stamp{background:#1a1a1a;color:#fff;border-radius:8px;padding:10px 14px;font-size:14px;text-align:center;margin:10px 0}
+.dp-stamp b{color:#ffd166}
+.dp-btn{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:15px;cursor:pointer;font-family:inherit}
+.dp-live{border:2px solid #2563eb;border-radius:10px;padding:10px 14px;margin:10px 0;background:#f0f5ff}
+.dp-live .t{font-weight:700;font-size:15px}
+.dp-live .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#16a34a;margin-left:6px}
+.dp-live-items{display:flex;flex-wrap:wrap;gap:6px 18px;margin:6px 0 2px 0;font-size:15px}
+.dp-live-items b{direction:ltr;unicode-bidi:embed}
+.dp-live-note{font-size:12px;color:#666;margin:4px 0 0 0}
+.dp-live-err{color:#b91c1c;font-weight:700;display:none}
+.dp-input{border:1px solid #ccc;border-radius:8px;padding:8px 10px;font-size:15px;width:160px;font-family:inherit}
+</style>
+
+<h1 style="font-size:26px;margin:0 0 6px 0;">أسعار اليوم في القاهرة — العبور والمواصلات والذهب والدولار والوقود والسلع</h1>
+<p style="color:#555;margin:0 0 10px 0;">أسعار القاهرة اليومية من مصادرها الرسمية والتجارية الموثوقة — سوق العبور والمواصلات والذهب والدولار والوقود والسلع — تُحدَّث مرتين يومياً، وليست أسعاراً لحظية.</p>
+
+<!-- شريط الأسعار اللحظية (يُحدَّث في متصفح الزائر كل 60 ثانية — لا يمس جداول اللقطات ولا توقيتاتها) -->
+<div class="dp-live" id="dp-live">
+<div class="t"><span class="dot"></span> أسعار لحظية — تُحدَّث كل دقيقة</div>
+<div class="dp-live-items">
+<span>دولار وسطي: <b id="live-usd">…</b></span>
+<span>الأونصة: <b id="live-oz">…</b></span>
+<span>تقدير عيار 21: <b id="live-g21">…</b></span>
+</div>
+<p class="dp-live-note">الشريط أعلاه تقديرات لحظية استرشادية من مصادر عامة مفتوحة (open.er-api وXAUS) — والجداول أدناه لقطات موثَّقة بتوقيتها. تقدير عيار 21 = الأونصة × الدولار الوسطي × (21÷24) ÷ 31.1035، وهو <b>تقدير استرشادي لحظي — وليس سعر الصاغة</b>. <span id="live-err" class="dp-live-err">تعذّر التحديث اللحظي — تُعرض آخر قيم معروفة.</span> <span id="live-time"></span></p>
+</div>
+<script>
+(function(){
+  var last={};
+  function fmt(n,d){return Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+  function set(id,txt){var el=document.getElementById(id);if(el){el.textContent=txt;}}
+  function showErr(on){var el=document.getElementById('live-err');if(el){el.style.display=on?'inline':'none';}}
+  function tick(){
+    Promise.allSettled([
+      fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json();}),
+      fetch('https://xaus.com/api/v1/spot?currency=EGP&unit=gram').then(function(r){return r.json();})
+    ]).then(function(res){
+      var ok=true;
+      if(res[0].status==='fulfilled'&&res[0].value&&res[0].value.rates&&res[0].value.rates.EGP){
+        last.usd=res[0].value.rates.EGP;
+      } else { ok=false; }
+      if(res[1].status==='fulfilled'&&res[1].value&&res[1].value.spot_usd_oz){
+        last.oz=res[1].value.spot_usd_oz;
+      } else { ok=false; }
+      if(last.usd){set('live-usd',fmt(last.usd,2)+' ج');}
+      if(last.oz){set('live-oz','$'+fmt(last.oz,2));}
+      if(last.oz&&last.usd){
+        set('live-g21',fmt(last.oz*last.usd*(21/24)/31.1035,0)+' ج');
+      }
+      showErr(!ok);
+      if(ok){
+        var d=new Date();
+        set('live-time','آخر تحديث لحظي: '+d.getHours()+':'+('0'+d.getMinutes()).slice(-2));
+      }
+    });
+  }
+  tick();
+  setInterval(tick,60000);
+})();
+</script>
+
+<div class="dp-stamp" id="dp-stamp">آخر تحديث: <b>الثلاثاء 17 نوفمبر 2026 — 06:42 م</b> بتوقيت القاهرة &nbsp;|&nbsp; التحديث التالي: <b>09:00 (غداً)</b> &nbsp;|&nbsp; الأسعار بدون مصنعية أو دمغة أو ضريبة</div>
+
+<div style="text-align:center;">
+  <div class="dp-card"><div class="l">عيار 21 (بيع)</div><div class="v" id="card-g21">5,925 ج</div></div>
+  <div class="dp-card"><div class="l">دولار — البنك المركزي (بيع)</div><div class="v" id="card-usd">53.75 ج</div></div>
+  <div class="dp-card"><div class="l">بنزين 92</div><div class="v" id="card-f92">22.25 ج</div></div>
+</div>
+
+<div class="dp-note">هذه الصفحة <b>لقطتان يومياً (09:00 و16:00 بتوقيت القاهرة)</b> — الجداول أدناه لقطات موثَّقة وليست بثاً لحظياً، وأي تحرك بين اللقطتين يظهر في اللقطة التالية، ويُكتب وقت كل لقطة فوق الجدول. الشريط اللحظي في الأعلى وسعر الأونصة العالمية في الأسفل ودجتات حيّة استرشادية.</div>
+
+<!-- 1) سوق العبور -->
+<div class="dp-sec" id="sec-obour">
+<h2>1) أسعار سوق العبور اليوم — جملة (جنيه/كيلو)</h2>
+<p style="font-size:14px;color:#555;margin:4px 0 6px 0;">أسعار الجملة ليوم <span id="ob-date" style="font-weight:700;">الثلاثاء 17 نوفمبر 2026</span> — من الموقع الرسمي لسوق العبور.</p>
+<table class="dp-table">
+<tr><th>الصنف</th><th>من (جنيه/كيلو)</th><th>إلى (جنيه/كيلو)</th></tr>
+<tr><td>طماطم</td><td class="dp-num" id="ob-tomato-lo">10</td><td class="dp-num" id="ob-tomato-hi">15</td></tr>
+<tr><td>بطاطس</td><td class="dp-num" id="ob-potato-lo">14</td><td class="dp-num" id="ob-potato-hi">22</td></tr>
+<tr><td>بصل أبيض</td><td class="dp-num" id="ob-white-onion-lo">17</td><td class="dp-num" id="ob-white-onion-hi">21</td></tr>
+<tr><td>بصل أحمر</td><td class="dp-num" id="ob-red-onion-lo">17</td><td class="dp-num" id="ob-red-onion-hi">21</td></tr>
+<tr><td>كوسة</td><td class="dp-num" id="ob-zucchini-lo">8</td><td class="dp-num" id="ob-zucchini-hi">18</td></tr>
+<tr><td>خيار بلدي</td><td class="dp-num" id="ob-baladi-cucumber-lo">9</td><td class="dp-num" id="ob-baladi-cucumber-hi">15</td></tr>
+<tr><td>فلفل رومي بلدي</td><td class="dp-num" id="ob-romaine-pepper-lo">6</td><td class="dp-num" id="ob-romaine-pepper-hi">12</td></tr>
+<tr><td>برتقال بلدي</td><td class="dp-num" id="ob-baladi-orange-lo">11</td><td class="dp-num" id="ob-baladi-orange-hi">15</td></tr>
+<tr><td>ليمون بلدي</td><td class="dp-num" id="ob-baladi-lemon-lo">12</td><td class="dp-num" id="ob-baladi-lemon-hi">20</td></tr>
+<tr><td>بلطي</td><td class="dp-num" id="ob-tilapia-lo">71</td><td class="dp-num" id="ob-tilapia-hi">75</td></tr>
+</table>
+<p class="dp-src">المصدر: الموقع الرسمي لسوق العبور — تُنقل أسعاره يومياً في الصحف (مصراوي، 17 نوفمبر 2026). الأسعار أعلاه <b>أسعار جملة</b>، وسعر القطاعي للمستهلك أعلى عادةً بنحو 5–10 جنيهات للكيلو. قد تختلف الأسعار بين تجار السوق أنفسهم.</p>
+<div class="dp-note">هذه الأسعار جملة وليست قطاعياً — قارنها بسعر السوق القريب منك مع إضافة هامش التجزئة.</div>
+</div>
+
+<!-- 2) المواصلات -->
+<div class="dp-sec" id="sec-transport">
+<h2>2) أسعار المواصلات في القاهرة</h2>
+<p style="font-size:14px;color:#555;margin:4px 0 6px 0;">جداول ثابتة تتغير بقرار رسمي فقط — آخر تحديث للقرارات: مارس–يوليو 2026.</p>
+<h3 style="font-size:17px;margin:12px 0 4px 0;">المترو (الخطوط الثلاثة — تذكرة واحدة تشمل التحويل)</h3>
+<table class="dp-table">
+<tr><th>عدد المحطات</th><th>سعر التذكرة</th></tr>
+<tr><td>حتى 9 محطات</td><td class="dp-num">10 جنيه</td></tr>
+<tr><td>حتى 16 محطة</td><td class="dp-num">12 جنيه</td></tr>
+<tr><td>حتى 23 محطة</td><td class="dp-num">15 جنيه</td></tr>
+<tr><td>حتى 39 محطة</td><td class="dp-num">20 جنيه</td></tr>
+</table>
+<p class="dp-src">المصدر: وزارة النقل — التعريفة سارية من 27 مارس 2026. الاشتراكات الشهرية: 390 / 440 / 510 / 600 جنيه (منطقة / منطقتان / 3–4 مناطق / 5–6 مناطق).</p>
+<h3 style="font-size:17px;margin:12px 0 4px 0;">المونوريل — شرق النيل (الاستاد ↔ العاصمة الإدارية، 22 محطة)</h3>
+<table class="dp-table">
+<tr><th>عدد المحطات</th><th>سعر التذكرة</th></tr>
+<tr><td>حتى 5 محطات</td><td class="dp-num">20 جنيه</td></tr>
+<tr><td>حتى 10 محطات</td><td class="dp-num">40 جنيه</td></tr>
+<tr><td>حتى 15 محطة</td><td class="dp-num">55 جنيه</td></tr>
+<tr><td>الخط كاملاً</td><td class="dp-num">80 جنيه</td></tr>
+</table>
+<p class="dp-src">المصدر: وزارة النقل — التشغيل من 6 مايو 2026. خصم 50% أيام الجمعة والسبت والعطلات الرسمية، واشتراكات بخصم حتى 50%. خط غرب النيل (6 أكتوبر، 13 محطة) ما زال تحت الإنشاء — غير مذكور هنا كخط عامل.</p>
+<h3 style="font-size:17px;margin:12px 0 4px 0;">أوتوبيسات هيئة النقل العام</h3>
+<table class="dp-table">
+<tr><th>النوع</th><th>الخط كاملاً</th><th>نصف الخط</th><th>ربع الخط</th></tr>
+<tr><td>عادي</td><td class="dp-num">13 جنيه</td><td class="dp-num">8 جنيه</td><td class="dp-num">5 جنيه</td></tr>
+<tr><td>مكيف</td><td class="dp-num">25 جنيه</td><td class="dp-num">18 جنيه</td><td class="dp-num">—</td></tr>
+</table>
+<p class="dp-src">المصدر: هيئة النقل العام — القرار 82/2026 ساري من 15 يوليو 2026. تقسيم الخط (نصف/ربع) متاح فقط لحاملي كارت «طوالي» المدفوع مقدماً — راكب الكاش يدفع أجرة الخط كاملاً دائماً. بعض الخطوط لها تعريفة خاصة (مثلاً خط 24: 12/8، وخط 1018: 17/15).</p>
+</div>
+
+<!-- 3) الذهب -->
+<div class="dp-sec" id="sec-gold">
+<h2>3) سعر الذهب في مصر</h2>
+<table class="dp-table">
+<tr><th>العيار</th><th>شراء (جنيه/جرام)</th><th>بيع (جنيه/جرام)</th><th>التغير عن الأمس</th></tr>
+<tr><td>عيار 24</td><td class="dp-num" id="g24-buy">6,714.25</td><td class="dp-num" id="g24-sell">6,771.50</td><td id="g24-chg">−0.1%</td></tr>
+<tr><td>عيار 21</td><td class="dp-num" id="g21-buy">5,875</td><td class="dp-num" id="g21-sell">5,925</td><td id="g21-chg">−0.1%</td></tr>
+<tr><td>عيار 18</td><td class="dp-num" id="g18-buy">5,035.75</td><td class="dp-num" id="g18-sell">5,078.50</td><td id="g18-chg">−0.1%</td></tr>
+<tr><td>جنيه ذهب (8 جرام عيار 21)</td><td class="dp-num" id="gp-buy">47,000</td><td class="dp-num" id="gp-sell">47,400</td><td id="gp-chg">−0.1%</td></tr>
+</table>
+<p class="dp-src">المصدر: <a href="https://market.isagha.com" target="_blank" rel="noopener">آي صاغة (iSagha)</a> — آخر تحديث للسعر: 06:42 م بتوقيت القاهرة. الأسعار بدون مصنعية أو دمغة أو ضريبة.</p>
+<p style="font-size:14px;color:#555;">للتقاطع: سعر الأونصة العالمية الآن <span id="xau-oz" style="font-weight:700;">$3,872.35</span> (القيمة النظرية لجرام 24 من الأونصة: <span id="xau-gram-egp" style="font-weight:700;">6,683.25 جنيه</span>) — والعلاوة المحلية عن النظري نحو 2%.</p>
+</div>
+
+<!-- حاسبة الجرامات -->
+<div class="dp-sec" id="sec-calc" style="background:#f7f7f7;border-radius:10px;padding:14px 16px;">
+<h2 style="border:none;padding:0;">حاسبة سريعة: معك كام جنيه؟</h2>
+<p style="font-size:14px;color:#555;margin:4px 0 10px 0;">يجيبوا كام جرام ذهب عيار 21 بسعر البيع الحالي (<span id="calc-price">5,925</span> جنيه للجرام)؟</p>
+<input class="dp-input" id="calc-amount" type="number" min="0" placeholder="اكتب المبلغ بالجنيه" /> 
+<button class="dp-btn" onclick="var a=parseFloat(document.getElementById('calc-amount').value);var p=parseFloat(document.getElementById('g21-sell').textContent.replace(/,/g,''));var r=document.getElementById('calc-result');if(!a||a<=0||!p){r.textContent='اكتب مبلغاً صحيحاً.';}else{r.textContent='≈ '+(a/p).toFixed(2)+' جرام عيار 21 (بدون مصنعية).';}">احسب</button>
+<p id="calc-result" style="font-weight:700;margin:10px 0 0 0;"></p>
+<p style="font-size:12px;color:#888;margin:6px 0 0 0;">حساب استرشادي بالسعر المعروض في الجدول أعلاه، ويتغير مع كل لقطة.</p>
+</div>
+
+<!-- 4) العملات -->
+<div class="dp-sec" id="sec-fx">
+<h2>4) سعر الدولار والعملات</h2>
+<table class="dp-table">
+<tr><th>العملة</th><th>شراء (جنيه)</th><th>بيع (جنيه)</th><th>ملاحظة</th></tr>
+<tr><td>دولار أمريكي — البنك المركزي</td><td class="dp-num" id="usd-cbe-buy">53.62</td><td class="dp-num" id="usd-cbe-sell">53.75</td><td>سعر رسمي (عبر الصحف اليوم)</td></tr>
+<tr><td>دولار أمريكي — البنوك (الأهلي / مصر)</td><td class="dp-num" id="usd-bank-buy">53.63</td><td class="dp-num" id="usd-bank-sell">53.73</td><td>سعر البنوك صباح اليوم</td></tr>
+<tr><td>يورو</td><td class="dp-num" colspan="2" id="eur-mid">59.08 (وسطي)</td><td>سعر وسطي استرشادي</td></tr>
+<tr><td>جنيه إسترليني</td><td class="dp-num" colspan="2" id="gbp-mid">70.80 (وسطي)</td><td>سعر وسطي استرشادي</td></tr>
+<tr><td>ريال سعودي</td><td class="dp-num" colspan="2" id="sar-mid">14.31 (وسطي)</td><td>سعر وسطي استرشادي</td></tr>
+<tr><td>درهم إماراتي</td><td class="dp-num" colspan="2" id="aed-mid">14.62 (وسطي)</td><td>سعر وسطي استرشادي</td></tr>
+<tr><td>دينار كويتي</td><td class="dp-num" colspan="2" id="kwd-mid">172.51 (وسطي)</td><td>سعر وسطي استرشادي</td></tr>
+</table>
+<p class="dp-src">المصدر: <a href="https://www.cbe.org.eg/" target="_blank" rel="noopener">البنك المركزي المصري</a> (سعر الدولار الرسمي — منشور صباح اليوم عبر الصحف، لأن موقع المركزي يحجب الجلب الآلي) + <a href="https://open.er-api.com/v6/latest/USD" target="_blank" rel="noopener">open.er-api.com</a> (الأسعار الوسطية — تُجلَب لحظة كل لقطة). الأسعار الوسطية ليست أسعار شراء/بيع بنكية.</p>
+<div class="dp-warn"><b>تنبيه:</b> ننشر الأسعار الرسمية للبنك المركزي والبنوك فقط. التعامل بالنقد الأجنبي خارج البنوك وشركات الصرافة المرخّصة مخالف للقانون 194 لسنة 2020 (المادة 233: سجن 3–10 سنوات + غرامة 1–5 ملايين جنيه).</div>
+</div>
+
+<!-- الفضة (ضمن قسم الذهب) -->
+<div class="dp-sec" id="sec-silver">
+<h2>سعر الفضة في مصر</h2>
+<table class="dp-table">
+<tr><th>العيار</th><th>شراء (جنيه/جرام)</th><th>بيع (جنيه/جرام)</th><th>التغير عن الأمس</th></tr>
+<tr><td>فضة 999</td><td class="dp-num" id="s999-buy">83.00</td><td class="dp-num" id="s999-sell">85.75</td><td id="s999-chg">−3.4%</td></tr>
+<tr><td>فضة 925</td><td class="dp-num" id="s925-buy">76.75</td><td class="dp-num" id="s925-sell">79.25</td><td id="s925-chg">−3.6%</td></tr>
+<tr><td>فضة 800</td><td class="dp-num" id="s800-buy">66.50</td><td class="dp-num" id="s800-sell">68.75</td><td id="s800-chg">−3.5%</td></tr>
+</table>
+<p class="dp-src">المصدر: <a href="https://market.isagha.com" target="_blank" rel="noopener">آي صاغة (iSagha)</a> — آخر تحديث للسعر: 06:42 م بتوقيت القاهرة. سعر الأونصة العالمية للفضة الآن: <span id="xau-silver-oz" style="font-weight:700;">$47.44</span>.</p>
+</div>
+
+<!-- 5) الوقود -->
+<div class="dp-sec" id="sec-fuel">
+<h2>5) أسعار الوقود</h2>
+<table class="dp-table">
+<tr><th>المنتج</th><th>السعر (جنيه)</th><th>الوحدة</th></tr>
+<tr><td>بنزين 80</td><td class="dp-num" id="f80">20.75</td><td>لتر</td></tr>
+<tr><td>بنزين 92</td><td class="dp-num" id="f92">22.25</td><td>لتر</td></tr>
+<tr><td>بنزين 95</td><td class="dp-num" id="f95">24.00</td><td>لتر</td></tr>
+<tr><td>سولار / كيروسين</td><td class="dp-num" id="f-diesel">20.50</td><td>لتر</td></tr>
+<tr><td>أسطوانة بوتاجاز 12.5 كجم</td><td class="dp-num" id="f-gas">275</td><td>أسطوانة</td></tr>
+<tr><td>غاز سيارات</td><td class="dp-num" id="f-cng">13</td><td>م³</td></tr>
+</table>
+<p class="dp-src">المصدر: لجنة التسعير التلقائي للمنتجات البترولية — قرار 15 أكتوبر 2026. المراجعة التالية متوقعة في ديسمبر 2026 (توقّع منشور في الصحف، وليس موعداً مؤكداً من الوزارة) — جدول ثابت لا يتغير يومياً.</p>
+</div>
+
+<!-- 6) السلع الغذائية -->
+<div class="dp-sec" id="sec-food">
+<h2>6) أسعار السلع الغذائية الأساسية</h2>
+<table class="dp-table">
+<tr><th>السلعة</th><th>السعر (جنيه)</th><th>الوحدة</th></tr>
+<tr><td>أرز معبأ</td><td class="dp-num" id="food-rice">34.86</td><td>كيلو</td></tr>
+<tr><td>سكر معبأ</td><td class="dp-num" id="food-sugar">33.36</td><td>كيلو</td></tr>
+<tr><td>زيت عباد الشمس</td><td class="dp-num" id="food-sunflower">104.79</td><td>لتر</td></tr>
+<tr><td>زيت ذرة</td><td class="dp-num" id="food-corn">127.50</td><td>لتر</td></tr>
+<tr><td>دقيق معبأ</td><td class="dp-num" id="food-flour">27.32</td><td>كيلو</td></tr>
+<tr><td>فول معبأ</td><td class="dp-num" id="food-beans">62.91</td><td>كيلو</td></tr>
+</table>
+<p class="dp-src">المصدر: <a href="https://agriprice.gov.eg/" target="_blank" rel="noopener">بوابة أسعار السلع المحلية والعالمية — مركز معلومات مجلس الوزراء (Agriprice)</a> — متوسطات السوق اليوم. الأسعار قد تختلف من منطقة لأخرى. أسعار مبادرة التموين المخفّضة (25 جنيهاً للسكر/الأرز في المنافذ) مختلفة عن متوسطات السوق ولا تظهر هنا.</p>
+</div>
+
+<!-- ودجت الأونصة العالمية الحي -->
+<div class="dp-sec" id="sec-live">
+<h2>الأونصة العالمية الآن (ودجت حي استرشادي)</h2>
+<p id="live-xau" style="font-size:17px;">جارٍ جلب السعر العالمي…</p>
+<p class="dp-src">المصدر: <a href="https://xaus.com/api" target="_blank" rel="noopener">XAUS</a> — سعر عالمي لحظي استرشادي، وليس سعر الصاغة المصرية. إن لم يظهر السعر، فالودجت متوقف مؤقتاً واللقطة الثابتة أعلاه هي المرجع.</p>
+<script>
+(function(){try{fetch('https://xaus.com/api/v1/spot?currency=EGP&unit=gram').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('live-xau');if(el&&d&&d.spot_usd_oz){el.innerHTML='الأونصة عالمياً الآن: <b>$'+Number(d.spot_usd_oz).toLocaleString('en-US',{maximumFractionDigits:2})+'</b> — جرام 24 نظرياً: <b>'+Number(d.xau.price).toLocaleString('en-US',{maximumFractionDigits:2})+' جنيه</b>.';}}).catch(function(){var el=document.getElementById('live-xau');if(el){el.style.display='none';}});}catch(e){var el=document.getElementById('live-xau');if(el){el.style.display='none';}}})();
+</script>
+</div>
+
+<!-- كيف تُحسب الأسعار -->
+<div class="dp-sec" id="sec-how">
+<h2>كيف تُحسب الأسعار؟ ولماذا تختلف من موقع لآخر؟</h2>
+<p>سعر الذهب المحلي = سعر الأونصة العالمي بالدولار × سعر الدولار مقابل الجنيه × نقاء العيار، + <b>علاوة محلية</b> (فرق السوق المصري عن العالمي — نحو 2% في لقطة اليوم). العلاوة هي سبب اختلاف المصادر عن بعضها في الصباح نفسه (50–135 جنيهاً لعيار 21 في 12 نوفمبر). لذلك نعرض <b>مصدراً واحداً ثابتاً (آي صاغة) + وقت اللقطة</b>، ولا ندّعي أن سعرنا هو «السعر الوحيد الصحيح».</p>
+<p>أسعار العملات: سعر الدولار الرسمي من البنك المركزي، وأسعار البنوك الكبرى (الأهلي/مصر)، والعملات الأخرى بسعر وسطي استرشادي من مجمّع أسعار الصرف — وليست أسعار شراء/بيع بنكية.</p>
+<p>أسعار العبور <b>جملة</b> (سعر التاجر بالكيلو) وليست قطاعياً — لذلك تظهر كنطاق (من–إلى) لا سعراً واحداً، ولأن سعر الجملة يتحرك يومياً مع العرض والطلب، فحد التغيّر المسموح به قبل النشر أوسع (40%) من الذهب والدولار.</p>
+<p>أسعار المواصلات <b>جداول ثابتة</b> من قرارات رسمية (وزارة النقل وهيئة النقل العام) — لا تتغير يومياً ولا تُحدَّث مع اللقطات؛ تتغير فقط عندما يصدر قرار جديد، وعندها تُعدَّل الصفحة يدوياً.</p>
+</div>
+
+<!-- أسئلة شائعة -->
+<div class="dp-sec" id="sec-faq">
+<h2>أسئلة شائعة</h2>
+<p><b>هل أسعار العبور جملة أم قطاعي؟</b><br/>جملة — أسعار سوق العبور للتجار بالكيلو. سعر القطاعي للمستهلك في السوق القريب منك أعلى عادةً بنحو 5–10 جنيهات للكيلو.</p>
+<p><b>متى تتحدث أسعار العبور؟</b><br/>مع كل لقطة (09:00 و16:00) من التحديث اليومي للسوق — إن لم يُحدَّث سعر صنف في اللقطة، يبقى آخر سعر معروف موسوماً بتاريخه ولا يُخترع رقم جديد.</p>
+<p><b>هل السعر يشمل المصنعية؟</b><br/>لا — كل أسعار الذهب والفضة هنا بدون مصنعية أو دمغة أو ضريبة. المصنعية تضاف في محل الصاغة وتختلف من محل لآخر (عادة 3–8%).</p>
+<p><b>لماذا يختلف سعركم عن موقع آخر؟</b><br/>لأن كل مصدر يلتقط السعر في وقت مختلف وبعلاوة محلية مختلفة. قارن دائماً بنفس المصدر ونفس الوقت — ومصدرنا ووقت لقطتنا مكتوبان فوق كل جدول.</p>
+<p><b>متى تتحدث الأسعار؟</b><br/>مرتان يومياً: 09:00 صباحاً و16:00 عصراً بتوقيت القاهرة (لقطة صباحية واحدة يومي الجمعة والسبت). بين اللقطتين لا يتغير شيء في الصفحة — ما عدا جداول المواصلات، فهي ثابتة وتتغير بقرار رسمي فقط.</p>
+<p><b>هل هذه الأسعار توصية استثمارية؟</b><br/>لا — الأسعار معلومات استرشادية فقط، وليست توصية بيع أو شراء أو استثمار.</p>
+</div>
+
+<!-- المصادر والمنهجية -->
+<div class="dp-sec" id="sec-sources">
+<h2>المصادر والمنهجية</h2>
+<ul style="font-size:14px;color:#444;">
+<li>سوق العبور: الأسعار اليومية للجملة من الموقع الرسمي للسوق، كما تنقلها الصحف يومياً (مصراوي) — رابط الموقع الرسمي قيد التأكيد ويُضاف فور تحققه.</li>
+<li>المواصلات: وزارة النقل (تعريفة المترو من 27 مارس 2026؛ المونوريل من 6 مايو 2026) وهيئة النقل العام (القرار 82/2026 من 15 يوليو 2026) — جداول ثابتة تتغير بقرار رسمي فقط.</li>
+<li>الذهب والفضة: <a href="https://market.isagha.com">آي صاغة (iSagha)</a> — جدول شراء/بيع، يُحدَّث عدة مرات يومياً.</li>
+<li>الأونصة العالمية: <a href="https://xaus.com/api">XAUS</a> — سعر فوري، بلا مفتاح.</li>
+<li>الدولار الرسمي: <a href="https://www.cbe.org.eg/">البنك المركزي المصري</a> (عبر الصحف اليومية — موقع المركزي يحجب الجلب الآلي).</li>
+<li>الأسعار الوسطية للعملات: <a href="https://open.er-api.com/v6/latest/USD">open.er-api.com</a> — تحديث يومي.</li>
+<li>الوقود: لجنة التسعير التلقائي — قرار 15 أكتوبر 2026؛ المراجعة التالية متوقعة في ديسمبر 2026 (توقّع منشور، وليس موعداً مؤكداً).</li>
+<li>السلع الغذائية: <a href="https://agriprice.gov.eg/">بوابة أسعار السلع — مركز معلومات مجلس الوزراء (Agriprice)</a>.</li>
+</ul>
+<p style="font-size:13px;color:#888;">منهجية التحقق: كل قيمة رقمية تُفحص قبل النشر — نطاق عاقل، وتغيّر عن اللقطة السابقة أقل من 5% للذهب و2% للدولار و40% لأسعار العبور (الجملة تتحرك بسرعة)، وفرق سعر آي صاغة عن القيمة النظرية (الأونصة × الدولار) أقل من 3%. عند فشل مصدر أو تجاوز حد، لا يُنشر رقم جديد — يُحتفظ بآخر سعر معروف موسوماً بوقته. إخلاء مسؤولية: المحتوى معلومات عامة للتوعية، وليس استشارة استثمارية أو مالية مخصصة.</p>
+<p style="font-size:13px;color:#888;">صفحة من مدونة «دليل كل حاجة» — دليل القاهرة الشامل: خدمات وأسعار ومواصلات.</p>
+</div>
+</div>
+<!-- نهاية صفحة أسعار اليوم -->
