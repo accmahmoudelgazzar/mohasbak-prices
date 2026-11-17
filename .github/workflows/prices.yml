@@ -39,6 +39,8 @@ jobs:
           BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
           BLOG_ID: ${{ secrets.BLOG_ID }}
           PAGE_ID: ${{ secrets.PAGE_ID }}
+          GUIDE_BLOG_ID: ${{ secrets.GUIDE_BLOG_ID }}
+          GUIDE_PAGE_ID: ${{ secrets.GUIDE_PAGE_ID }}
           COINGECKO_DEMO_KEY: ${{ secrets.COINGECKO_DEMO_KEY }}
         run: |
           ARGS="--publish"
