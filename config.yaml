@@ -21,27 +21,27 @@ guide:
 
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-16 (Monday close — El Balad/Aleqaria/Veto agree 53.62/53.75).
-  usd_cbe_buy: 53.62
+  # Dated: 2026-11-17 (Tuesday close — El Balad/Aleqaria/Veto agree 53.62/53.75).
+  usd_cbe_buy: 53.61
   usd_cbe_sell: 53.75
-  # Bank rates (NBE / Banque Misr) — dated 2026-11-16 (Monday close).
-  usd_bank_buy: 53.63
-  usd_bank_sell: 53.73
-  # EGX close — dated 2026-11-16 (Monday close).
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-17 (Tuesday close).
+  usd_bank_buy: 53.67
+  usd_bank_sell: 53.77
+  # EGX close — dated 2026-11-17 (Tuesday close).
   # egx_date MUST be updated together with these three values — the page header
   # («إغلاق …») and the change column show this date, and the script never
   # advances it on its own. Format: YYYY-MM-DD.
-  egx_date: "2026-11-16"
-  egx30: 52199.83
-  egx70: 18028.42
-  egx100: 24023.77
-  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-16 (Monday close).
-  food_rice: 34.86
-  food_sugar: 33.36
-  food_sunflower: 104.79
+  egx_date: "2026-11-17"
+  egx30: 51681.62
+  egx70: 17592.75
+  egx100: 23535.06
+  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-17 (Tuesday close).
+  food_rice: 34.81
+  food_sugar: 34.79
+  food_sunflower: 108.90
   food_corn: 127.50
-  food_flour: 27.32
-  food_beans: 62.91
+  food_flour: 27.87
+  food_beans: 62.10
   # Obour wholesale prices (EGP/kg) — dated 2026-11-17 (Tuesday).
   # Source: the market's official site, as carried daily by Masrawy
   # (the official site URL itself is still unconfirmed — no auto-scraper
