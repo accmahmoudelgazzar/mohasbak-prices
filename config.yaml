@@ -18,58 +18,58 @@ guide:
   # the page is created on the Guide blog (PLACEHOLDER until then).
   page_id: "6714317575238257796"
 
-
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-17 (Tuesday close — El Balad/Aleqaria/Veto agree 53.62/53.75).
-  usd_cbe_buy: 53.61
-  usd_cbe_sell: 53.75
-  # Bank rates (NBE / Banque Misr) — dated 2026-11-17 (Tuesday close).
-  usd_bank_buy: 53.67
-  usd_bank_sell: 53.77
-  # EGX close — dated 2026-11-17 (Tuesday close).
+  # Dated: 2026-11-18 (Wednesday close — ElBalad 17:00 + 21:12, Aleqaria 19:23, Youlyou agree 53.75/53.89; minority Aleqaria 22:54 says sell 53.88).
+  usd_cbe_buy: 53.75
+  usd_cbe_sell: 53.89
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-18 (Wednesday close — Aleqaria 19:23 + 22:54, ElBalad 18:21, Youlyou agree).
+  usd_bank_buy: 53.77
+  usd_bank_sell: 53.87
+  # EGX close — dated 2026-11-18 (Wednesday close).
   # egx_date MUST be updated together with these three values — the page header
   # («إغلاق …») and the change column show this date, and the script never
   # advances it on its own. Format: YYYY-MM-DD.
-  egx_date: "2026-11-17"
-  egx30: 51681.62
-  egx70: 17592.75
-  egx100: 23535.06
-  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-17 (Tuesday close).
-  food_rice: 34.81
-  food_sugar: 34.79
-  food_sunflower: 108.90
+  egx_date: "2026-11-18"
+  egx30: 51544.82
+  egx70: 17564.29
+  egx100: 23456.45
+  # Food commodities (Cabinet portal via Masrawy 12:48) — dated 2026-11-18 (Wednesday close).
+  food_rice: 35.18
+  food_sugar: 34.86
+  food_sunflower: 113.90
   food_corn: 127.50
-  food_flour: 27.87
-  food_beans: 62.10
-  # Obour wholesale prices (EGP/kg) — dated 2026-11-17 (Tuesday).
+  food_flour: 27.64
+  food_beans: 62.06
+  # Obour wholesale prices (EGP/kg) — dated 2026-11-18 (Wednesday — Masrawy Obour 10:19; tilapia unchanged — no new report).
   # Source: the market's official site, as carried daily by Masrawy
   # (the official site URL itself is still unconfirmed — no auto-scraper
   # until it is resolved; until then these fields are manual like food/CBE).
   # obour_date MUST be updated together with these values — the Obour
   # section header shows this date, and the script never advances it.
   # Format: YYYY-MM-DD. Ranges are wholesale; retail runs ~5–10 EGP/kg higher.
-  obour_date: "2026-11-17"
-  obour_tomato_lo: 10
-  obour_tomato_hi: 15
-  obour_potato_lo: 14
-  obour_potato_hi: 22
+  obour_date: "2026-11-18"
+  obour_tomato_lo: 8
+  obour_tomato_hi: 14
+  obour_potato_lo: 13
+  obour_potato_hi: 23
   obour_white_onion_lo: 17
   obour_white_onion_hi: 21
   obour_red_onion_lo: 17
   obour_red_onion_hi: 21
-  obour_zucchini_lo: 8
-  obour_zucchini_hi: 18
-  obour_baladi_cucumber_lo: 9
-  obour_baladi_cucumber_hi: 15
-  obour_romaine_pepper_lo: 6
-  obour_romaine_pepper_hi: 12
+  obour_zucchini_lo: 6
+  obour_zucchini_hi: 12
+  obour_baladi_cucumber_lo: 10
+  obour_baladi_cucumber_hi: 12
+  obour_romaine_pepper_lo: 7
+  obour_romaine_pepper_hi: 14
   obour_baladi_orange_lo: 11
   obour_baladi_orange_hi: 15
   obour_baladi_lemon_lo: 12
-  obour_baladi_lemon_hi: 20
+  obour_baladi_lemon_hi: 18
   obour_tilapia_lo: 71
   obour_tilapia_hi: 75
+
 
   # Static fuel table (committee decision 15 Oct 2026, valid to 31 Dec 2026).
 fuel:
@@ -80,9 +80,9 @@ fuel:
   butane: 275
   cng: 13
 
+
 validation:
   max_gold_move_pct: 5.0
   max_usd_move_pct: 2.0
   max_theory_deviation_pct: 3.0
-
 
