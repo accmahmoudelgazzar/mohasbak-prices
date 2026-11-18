@@ -18,6 +18,7 @@ guide:
   # the page is created on the Guide blog (PLACEHOLDER until then).
   page_id: "6714317575238257796"
 
+
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
   # Dated: 2026-11-18 (Wednesday close — ElBalad 17:00 + 21:12, Aleqaria 19:23, Youlyou agree 53.75/53.89; minority Aleqaria 22:54 says sell 53.88).
@@ -70,7 +71,6 @@ manual:
   obour_tilapia_lo: 71
   obour_tilapia_hi: 75
 
-
   # Static fuel table (committee decision 15 Oct 2026, valid to 31 Dec 2026).
 fuel:
   f80: 20.75
@@ -80,9 +80,9 @@ fuel:
   butane: 275
   cng: 13
 
-
 validation:
   max_gold_move_pct: 5.0
   max_usd_move_pct: 2.0
   max_theory_deviation_pct: 3.0
+
 
