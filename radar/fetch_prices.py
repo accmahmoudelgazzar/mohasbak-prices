@@ -78,7 +78,7 @@ OBOUR_ITEMS = ("tomato", "potato", "white_onion", "red_onion", "zucchini",
 
 MAX_GOLD_MOVE_PCT = 5.0     # vs previous snapshot
 MAX_USD_MOVE_PCT = 2.0      # vs previous snapshot
-MAX_OBOUR_MOVE_PCT = 40.0   # vs previous snapshot (wholesale moves fast)
+MAX_OBOUR_MOVE_PCT = 60.0   # vs previous snapshot (wholesale moves fast; raised 40 -> 60 on 2026-11-19 after verified +50% zucchini move 12 -> 18, Obour official site)
 MAX_THEORY_DEVIATION_PCT = 3.0  # iSagha vs XAUS theoretical
 
 
