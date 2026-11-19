@@ -21,53 +21,53 @@ guide:
 
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-18 (Wednesday close — ElBalad 17:00 + 21:12, Aleqaria 19:23, Youlyou agree 53.75/53.89; minority Aleqaria 22:54 says sell 53.88).
-  usd_cbe_buy: 53.75
-  usd_cbe_sell: 53.89
-  # Bank rates (NBE / Banque Misr) — dated 2026-11-18 (Wednesday close — Aleqaria 19:23 + 22:54, ElBalad 18:21, Youlyou agree).
+  # Dated: 2026-11-19 Thursday close — Hapi Journal + AlMasryAlYoum 18:32 agree 53.76/53.86; minority ElBalad evening 53.75/53.85
+  usd_cbe_buy: 53.76
+  usd_cbe_sell: 53.86
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-19 Thursday close — unanimous, unchanged from Wednesday
   usd_bank_buy: 53.77
   usd_bank_sell: 53.87
-  # EGX close — dated 2026-11-18 (Wednesday close).
+  # EGX close — dated 2026-11-19 Thursday close
   # egx_date MUST be updated together with these three values — the page header
   # («إغلاق …») and the change column show this date, and the script never
   # advances it on its own. Format: YYYY-MM-DD.
-  egx_date: "2026-11-18"
-  egx30: 51544.82
-  egx70: 17564.29
-  egx100: 23456.45
-  # Food commodities (Cabinet portal via Masrawy 12:48) — dated 2026-11-18 (Wednesday close).
+  egx_date: "2026-11-19"
+  egx30: 51458.04
+  egx70: 17505.78
+  egx100: 23412.35
+  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-18 (Wednesday). NOT updated Thursday: no Masrawy Thursday report; conflicting Thursday portal snapshots (AlMasryAlYoum overnight table vs Elbashayer) — last good values kept, no invented number.
   food_rice: 35.18
   food_sugar: 34.86
   food_sunflower: 113.90
   food_corn: 127.50
   food_flour: 27.64
   food_beans: 62.06
-  # Obour wholesale prices (EGP/kg) — dated 2026-11-18 (Wednesday — Masrawy Obour 10:19; tilapia unchanged — no new report).
+  # Obour wholesale prices (EGP/kg) — dated 2026-11-19 Thursday, official Obour site via AlMasryAlYoum 12:17 + newsworled + MENAFN
   # Source: the market's official site, as carried daily by Masrawy
   # (the official site URL itself is still unconfirmed — no auto-scraper
   # until it is resolved; until then these fields are manual like food/CBE).
   # obour_date MUST be updated together with these values — the Obour
   # section header shows this date, and the script never advances it.
   # Format: YYYY-MM-DD. Ranges are wholesale; retail runs ~5–10 EGP/kg higher.
-  obour_date: "2026-11-18"
-  obour_tomato_lo: 8
-  obour_tomato_hi: 14
+  obour_date: "2026-11-19"
+  obour_tomato_lo: 12
+  obour_tomato_hi: 17
   obour_potato_lo: 13
   obour_potato_hi: 23
   obour_white_onion_lo: 17
-  obour_white_onion_hi: 21
+  obour_white_onion_hi: 22
   obour_red_onion_lo: 17
-  obour_red_onion_hi: 21
+  obour_red_onion_hi: 22
   obour_zucchini_lo: 6
-  obour_zucchini_hi: 12
-  obour_baladi_cucumber_lo: 10
-  obour_baladi_cucumber_hi: 12
-  obour_romaine_pepper_lo: 7
+  obour_zucchini_hi: 18
+  obour_baladi_cucumber_lo: 12
+  obour_baladi_cucumber_hi: 15
+  obour_romaine_pepper_lo: 8
   obour_romaine_pepper_hi: 14
   obour_baladi_orange_lo: 11
   obour_baladi_orange_hi: 15
   obour_baladi_lemon_lo: 12
-  obour_baladi_lemon_hi: 18
+  obour_baladi_lemon_hi: 20
   obour_tilapia_lo: 71
   obour_tilapia_hi: 75
 
