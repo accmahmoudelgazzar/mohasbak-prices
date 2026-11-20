@@ -21,9 +21,9 @@ guide:
 
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-19 Thursday close — Hapi Journal + AlMasryAlYoum 18:32 agree 53.76/53.86; minority ElBalad evening 53.75/53.85
-  usd_cbe_buy: 53.76
-  usd_cbe_sell: 53.86
+  # Dated: 2026-11-20 (Friday reports of Thursday close — bank holiday; AlMasryAlYoum 53.74/53.87, Al-Ain + Almashhad 53.74/53.88, ElBalad precise 53.742/53.880; minority ElBalad evening 53.76/53.87 and 03:00 53.76/53.86 — majority + precise CBE figure adopted).
+  usd_cbe_buy: 53.74
+  usd_cbe_sell: 53.88
   # Bank rates (NBE / Banque Misr) — dated 2026-11-19 Thursday close — unanimous, unchanged from Wednesday
   usd_bank_buy: 53.77
   usd_bank_sell: 53.87
@@ -35,13 +35,13 @@ manual:
   egx30: 51458.04
   egx70: 17505.78
   egx100: 23412.35
-  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-18 (Wednesday). NOT updated Thursday: no Masrawy Thursday report; conflicting Thursday portal snapshots (AlMasryAlYoum overnight table vs Elbashayer) — last good values kept, no invented number.
-  food_rice: 35.18
-  food_sugar: 34.86
-  food_sunflower: 113.90
-  food_corn: 127.50
-  food_flour: 27.64
-  food_beans: 62.06
+  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-20 (Friday daytime report 13:12, corroborated by sfegypt). NOTE: AlMasryAlYoum overnight portal table differs (rice 35.20/sugar 35.68/sunflower 107.78/flour 27.53/beans 61.81/corn 128.10); Mashhad-eg republished stale 13-Nov values — Masrawy daytime adopted as the standard source.
+  food_rice: 34.72
+  food_sugar: 35.25
+  food_sunflower: 104.89
+  food_corn: 130.65
+  food_flour: 27.62
+  food_beans: 61.62
   # Obour wholesale prices (EGP/kg) — dated 2026-11-19 Thursday, official Obour site via AlMasryAlYoum 12:17 + newsworled + MENAFN
   # Source: the market's official site, as carried daily by Masrawy
   # (the official site URL itself is still unconfirmed — no auto-scraper
@@ -84,5 +84,3 @@ validation:
   max_gold_move_pct: 5.0
   max_usd_move_pct: 2.0
   max_theory_deviation_pct: 3.0
-
-
