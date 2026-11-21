@@ -1,13 +1,13 @@
 {
   "date": "2026-11-21",
-  "stamp_cairo": "السبت 21 نوفمبر 2026 — 12:15 ص",
+  "stamp_cairo": "السبت 21 نوفمبر 2026 — 09:00 ص",
   "run_slot": "morning",
   "next_update": "16:00",
   "values": {
     "gold_usd_oz": 3539.0,
     "gold_egp_gram_24k": 6123.1,
     "silver_usd_oz": 41.08,
-    "btc_usd_xaus": 59025,
+    "btc_usd_xaus": 57881,
     "usd_egp_mid": 53.814593,
     "eur_mid": 59.09,
     "gbp_mid": 70.59,
@@ -28,10 +28,10 @@
     "s925_sell": 69.25,
     "s800_buy": 57.75,
     "s800_sell": 60.0,
-    "btc_usd": 59031,
-    "btc_egp": 3172942,
-    "eth_usd": 1620.31,
-    "eth_egp": 87093,
+    "btc_usd": 57935,
+    "btc_egp": 3117474,
+    "eth_usd": 1638.03,
+    "eth_egp": 88142,
     "usd_cbe_buy": 53.74,
     "usd_cbe_sell": 53.88,
     "usd_bank_buy": 53.77,
@@ -79,7 +79,7 @@
     "egx70": 0.0,
     "egx100": 0.0
   },
-  "run_hhmm": "12:15 ص",
+  "run_hhmm": "09:00 ص",
   "egx_date": "2026-11-19",
   "obour_date": "2026-11-19"
 }
