@@ -21,49 +21,51 @@ guide:
 
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-20 (Friday reports of Thursday close — bank holiday; AlMasryAlYoum 53.74/53.87, Al-Ain + Almashhad 53.74/53.88, ElBalad precise 53.742/53.880; minority ElBalad evening 53.76/53.87 and 03:00 53.76/53.86 — majority + precise CBE figure adopted).
-  usd_cbe_buy: 53.74
-  usd_cbe_sell: 53.88
-  # Bank rates (NBE / Banque Misr) — dated 2026-11-19 Thursday close — unanimous, unchanged from Wednesday
-  usd_bank_buy: 53.77
-  usd_bank_sell: 53.87
-  # EGX close — dated 2026-11-19 Thursday close
+  # Dated: 2026-11-22 (Sunday close — consensus Cairo24/ElBalad/BankersToday precise 54.3634/54.5026/Veto/MasrAlyoum/egy24/cairo-today: 54.36/54.50; AlArabiya sell 54.40 outlier; stale morning reports 53.74/53.88 ignored).
+  usd_cbe_buy: 54.36
+  usd_cbe_sell: 54.50
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-22 (Sunday close — consensus cairo-today/egy24/MasrAlyoum/Veto: 54.37/54.47).
+  usd_bank_buy: 54.37
+  usd_bank_sell: 54.47
+  # EGX close — dated 2026-11-22 (Sunday close — sharp broad fall; EGX30 broke below 50,000).
   # egx_date MUST be updated together with these three values — the page header
   # («إغلاق …») and the change column show this date, and the script never
   # advances it on its own. Format: YYYY-MM-DD.
-  egx_date: "2026-11-19"
-  egx30: 51458.04
-  egx70: 17505.78
-  egx100: 23412.35
-  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-20 (Friday daytime report 13:12, corroborated by sfegypt). NOTE: AlMasryAlYoum overnight portal table differs (rice 35.20/sugar 35.68/sunflower 107.78/flour 27.53/beans 61.81/corn 128.10); Mashhad-eg republished stale 13-Nov values — Masrawy daytime adopted as the standard source.
-  food_rice: 34.72
-  food_sugar: 35.25
-  food_sunflower: 104.89
-  food_corn: 130.65
-  food_flour: 27.62
-  food_beans: 61.62
-  # Obour wholesale prices (EGP/kg) — dated 2026-11-19 Thursday, official Obour site via AlMasryAlYoum 12:17 + newsworled + MENAFN
+  egx_date: "2026-11-22"
+  egx30: 49989.79
+  egx70: 16534.42
+  egx100: 22248.75
+  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-22 (Sunday daytime report, corroborated by newsworled + AlMasryAlYoum except sunflower: rice 34.77, sugar 35.71, sunflower 110.77, corn 131.14, flour 29.36, beans 64.83).
+  # NOTE: AlMasryAlYoum shows sunflower 107.35 vs Masrawy/newsworled 110.77 — Masrawy daytime adopted as the standard source.
+  food_rice: 34.77
+  food_sugar: 35.71
+  food_sunflower: 110.77
+  food_corn: 131.14
+  food_flour: 29.36
+  food_beans: 64.83
+  # Obour wholesale prices (EGP/kg) — dated 2026-11-22 (Sunday).
   # Source: the market's official site, as carried daily by Masrawy
   # (the official site URL itself is still unconfirmed — no auto-scraper
   # until it is resolved; until then these fields are manual like food/CBE).
   # obour_date MUST be updated together with these values — the Obour
   # section header shows this date, and the script never advances it.
   # Format: YYYY-MM-DD. Ranges are wholesale; retail runs ~5–10 EGP/kg higher.
-  obour_date: "2026-11-19"
-  obour_tomato_lo: 12
-  obour_tomato_hi: 17
-  obour_potato_lo: 13
-  obour_potato_hi: 23
-  obour_white_onion_lo: 17
+  # NOTE: Masrawy 11:34 + MENAFN agree on the new Sunday snapshot (deltas vs Saturday stated); Cairo24 05:06/banker.news/agrinewz/akhbarelyom republish Thursday's values (stale early reports). Tilapia kept 71–75: بلطي 1 unchanged per agrinewz/banker.news/vet-pen/akhbarelyom; Masrawy 69–77 is a blended range, not بلطي 1.
+  obour_date: "2026-11-22"
+  obour_tomato_lo: 10
+  obour_tomato_hi: 15
+  obour_potato_lo: 18
+  obour_potato_hi: 26
+  obour_white_onion_lo: 16
   obour_white_onion_hi: 22
-  obour_red_onion_lo: 17
-  obour_red_onion_hi: 22
+  obour_red_onion_lo: 16
+  obour_red_onion_hi: 20
   obour_zucchini_lo: 6
-  obour_zucchini_hi: 18
-  obour_baladi_cucumber_lo: 12
-  obour_baladi_cucumber_hi: 15
-  obour_romaine_pepper_lo: 8
-  obour_romaine_pepper_hi: 14
+  obour_zucchini_hi: 12
+  obour_baladi_cucumber_lo: 6
+  obour_baladi_cucumber_hi: 14
+  obour_romaine_pepper_lo: 7
+  obour_romaine_pepper_hi: 11
   obour_baladi_orange_lo: 11
   obour_baladi_orange_hi: 15
   obour_baladi_lemon_lo: 12
