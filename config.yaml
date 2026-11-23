@@ -21,54 +21,56 @@ guide:
 
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-22 (Sunday close — consensus Cairo24/ElBalad/BankersToday precise 54.3634/54.5026/Veto/MasrAlyoum/egy24/cairo-today: 54.36/54.50; AlArabiya sell 54.40 outlier; stale morning reports 53.74/53.88 ignored).
-  usd_cbe_buy: 54.36
-  usd_cbe_sell: 54.50
-  # Bank rates (NBE / Banque Misr) — dated 2026-11-22 (Sunday close — consensus cairo-today/egy24/MasrAlyoum/Veto: 54.37/54.47).
-  usd_bank_buy: 54.37
-  usd_bank_sell: 54.47
-  # EGX close — dated 2026-11-22 (Sunday close — sharp broad fall; EGX30 broke below 50,000).
+  # Dated: 2026-11-23 (Monday close — consensus ElWatan/AlArabiya/BankersToday precise 54.3057/54.4443/AlMasdar/Akhbar Elyoum: 54.31/54.44; morning reports 54.36/54.50 are Sunday's values, stale).
+  usd_cbe_buy: 54.31
+  usd_cbe_sell: 54.44
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-23 (Monday close — NBE 54.29/54.39 unanimous ElWatan/AlMasdar/Akhbar Elyoum; Misr 54.30/54.40 in ElWatan/AlMasdar, 54.29/54.39 in Akhbar Elyoum — NBE adopted).
+  usd_bank_buy: 54.29
+  usd_bank_sell: 54.39
+  # EGX close — dated 2026-11-23 (Monday close — broad rebound; EGX30 back above 50,000).
   # egx_date MUST be updated together with these three values — the page header
   # («إغلاق …») and the change column show this date, and the script never
   # advances it on its own. Format: YYYY-MM-DD.
-  egx_date: "2026-11-22"
-  egx30: 49989.79
-  egx70: 16534.42
-  egx100: 22248.75
-  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-22 (Sunday daytime report, corroborated by newsworled + AlMasryAlYoum except sunflower: rice 34.77, sugar 35.71, sunflower 110.77, corn 131.14, flour 29.36, beans 64.83).
-  # NOTE: AlMasryAlYoum shows sunflower 107.35 vs Masrawy/newsworled 110.77 — Masrawy daytime adopted as the standard source.
-  food_rice: 34.77
-  food_sugar: 35.71
-  food_sunflower: 110.77
-  food_corn: 131.14
-  food_flour: 29.36
-  food_beans: 64.83
-  # Obour wholesale prices (EGP/kg) — dated 2026-11-22 (Sunday).
+  egx_date: "2026-11-23"
+  egx30: 50711.96
+  egx70: 17098.16
+  egx100: 22874.63
+  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-23 (Monday daytime report 12:15, corroborated by newsworled: rice 34.73, sugar 37.38, sunflower 91.82, corn 119.82, flour 30.26, beans 64.00).
+  # NOTE: AlMasryAlYoum shows Sunday's values (34.77/35.71/107.35/131.14/29.36/64.83) — stale snapshot, not adopted.
+  food_rice: 34.73
+  food_sugar: 37.38
+  food_sunflower: 91.82
+  food_corn: 119.82
+  food_flour: 30.26
+  food_beans: 64.00
+  # Obour wholesale prices (EGP/kg) — dated 2026-11-23 (Monday).
   # Source: the market's official site, as carried daily by Masrawy
   # (the official site URL itself is still unconfirmed — no auto-scraper
   # until it is resolved; until then these fields are manual like food/CBE).
   # obour_date MUST be updated together with these values — the Obour
   # section header shows this date, and the script never advances it.
   # Format: YYYY-MM-DD. Ranges are wholesale; retail runs ~5–10 EGP/kg higher.
-  # NOTE: Masrawy 11:34 + MENAFN agree on the new Sunday snapshot (deltas vs Saturday stated); Cairo24 05:06/banker.news/agrinewz/akhbarelyom republish Thursday's values (stale early reports). Tilapia kept 71–75: بلطي 1 unchanged per agrinewz/banker.news/vet-pen/akhbarelyom; Masrawy 69–77 is a blended range, not بلطي 1.
-  obour_date: "2026-11-22"
+  # NOTE: Masrawy 11:34 + MENAFN agreed on the Sunday snapshot (deltas vs Saturday stated); Cairo24 05:06/banker.news/agrinewz/akhbarelyom republished Thursday's values (stale early reports). Tilapia kept 71–75: بلطي 1 unchanged per agrinewz/banker.news/vet-pen/akhbarelyom; Masrawy 69–77 is a blended range, not بلطي 1.
+  # Dated 2026-11-23 (Monday — official site via Masrawy + ElWatan + Cairo24 majority: potato 20–27, onions 15–20, pepper 8–12, orange 10–15, lemon 13–20; tomato 10–15 and zucchini 6–15 and cucumber 7–11 per ElWatan/Cairo24 vs Masrawy 11–15/6–13/7–12; Shorouk/Akhbar Elyoum/sahafa24/egy24 republish Sunday's values — stale).
+  # Tilapia kept 71–75: Akhbar Elyoum alone says 73–77 but its vegetable block is Sunday's stale values — unverified, last good value kept.
+  obour_date: "2026-11-23"
   obour_tomato_lo: 10
   obour_tomato_hi: 15
-  obour_potato_lo: 18
-  obour_potato_hi: 26
-  obour_white_onion_lo: 16
-  obour_white_onion_hi: 22
-  obour_red_onion_lo: 16
+  obour_potato_lo: 20
+  obour_potato_hi: 27
+  obour_white_onion_lo: 15
+  obour_white_onion_hi: 20
+  obour_red_onion_lo: 15
   obour_red_onion_hi: 20
   obour_zucchini_lo: 6
-  obour_zucchini_hi: 12
-  obour_baladi_cucumber_lo: 6
-  obour_baladi_cucumber_hi: 14
-  obour_romaine_pepper_lo: 7
-  obour_romaine_pepper_hi: 11
-  obour_baladi_orange_lo: 11
+  obour_zucchini_hi: 15
+  obour_baladi_cucumber_lo: 7
+  obour_baladi_cucumber_hi: 11
+  obour_romaine_pepper_lo: 8
+  obour_romaine_pepper_hi: 12
+  obour_baladi_orange_lo: 10
   obour_baladi_orange_hi: 15
-  obour_baladi_lemon_lo: 12
+  obour_baladi_lemon_lo: 13
   obour_baladi_lemon_hi: 20
   obour_tilapia_lo: 71
   obour_tilapia_hi: 75
