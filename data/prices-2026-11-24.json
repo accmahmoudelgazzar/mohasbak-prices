@@ -1,13 +1,13 @@
 {
   "date": "2026-11-24",
-  "stamp_cairo": "الثلاثاء 24 نوفمبر 2026 — 03:35 ص",
+  "stamp_cairo": "الثلاثاء 24 نوفمبر 2026 — 09:00 ص",
   "run_slot": "morning",
   "next_update": "16:00",
   "values": {
-    "gold_usd_oz": 3657.0,
-    "gold_egp_gram_24k": 6368.65,
-    "silver_usd_oz": 43.46,
-    "btc_usd_xaus": 61468,
+    "gold_usd_oz": 3626.6,
+    "gold_egp_gram_24k": 6334.87,
+    "silver_usd_oz": 42.28,
+    "btc_usd_xaus": 60467,
     "usd_egp_mid": 54.330891,
     "eur_mid": 59.34,
     "gbp_mid": 70.87,
@@ -28,10 +28,10 @@
     "s925_sell": 74.75,
     "s800_buy": 62.5,
     "s800_sell": 64.75,
-    "btc_usd": 61480,
-    "btc_egp": 3334613,
-    "eth_usd": 1717.18,
-    "eth_egp": 93138,
+    "btc_usd": 60423,
+    "btc_egp": 3284032,
+    "eth_usd": 1698.76,
+    "eth_egp": 92328,
     "usd_cbe_buy": 54.31,
     "usd_cbe_sell": 54.44,
     "usd_bank_buy": 54.29,
@@ -66,7 +66,9 @@
     "obour_tilapia_lo": 71.0,
     "obour_tilapia_hi": 75.0
   },
-  "notes": [],
+  "notes": [
+    "iSagha failed"
+  ],
   "changes": {
     "g24_sell": -0.35182989789284486,
     "g21_sell": -0.34965034965034963,
@@ -79,7 +81,7 @@
     "egx70": 3.409493650215742,
     "egx100": 2.8131018596550414
   },
-  "run_hhmm": "03:35 ص",
+  "run_hhmm": "09:00 ص",
   "egx_date": "2026-11-23",
   "obour_date": "2026-11-23"
 }
