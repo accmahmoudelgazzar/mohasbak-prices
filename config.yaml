@@ -22,19 +22,19 @@ guide:
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
   # Dated: 2026-11-23 (Monday close — consensus ElWatan/AlArabiya/BankersToday precise 54.3057/54.4443/AlMasdar/Akhbar Elyoum: 54.31/54.44; morning reports 54.36/54.50 are Sunday's values, stale).
-  usd_cbe_buy: 54.31
-  usd_cbe_sell: 54.44
+  usd_cbe_buy: 54.17
+  usd_cbe_sell: 54.30
   # Bank rates (NBE / Banque Misr) — dated 2026-11-23 (Monday close — NBE 54.29/54.39 unanimous ElWatan/AlMasdar/Akhbar Elyoum; Misr 54.30/54.40 in ElWatan/AlMasdar, 54.29/54.39 in Akhbar Elyoum — NBE adopted).
-  usd_bank_buy: 54.29
-  usd_bank_sell: 54.39
+  usd_bank_buy: 54.17
+  usd_bank_sell: 54.27
   # EGX close — dated 2026-11-23 (Monday close — broad rebound; EGX30 back above 50,000).
   # egx_date MUST be updated together with these three values — the page header
   # («إغلاق …») and the change column show this date, and the script never
   # advances it on its own. Format: YYYY-MM-DD.
-  egx_date: "2026-11-23"
-  egx30: 50711.96
-  egx70: 17098.16
-  egx100: 22874.63
+  egx_date: "2026-11-24"
+  egx30: 50885.33
+  egx70: 17112.77
+  egx100: 22942.27
   # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-23 (Monday daytime report 12:15, corroborated by newsworled: rice 34.73, sugar 37.38, sunflower 91.82, corn 119.82, flour 30.26, beans 64.00).
   # NOTE: AlMasryAlYoum shows Sunday's values (34.77/35.71/107.35/131.14/29.36/64.83) — stale snapshot, not adopted.
   food_rice: 34.73
