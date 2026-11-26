@@ -21,29 +21,29 @@ guide:
 
 manual:
   # CBE official USD buy/sell — copy from cbe.org.eg each morning (site blocks bots).
-  # Dated: 2026-11-25 (Wednesday close).
-  usd_cbe_buy: 54.62
-  usd_cbe_sell: 54.76
-  # Bank rates (NBE / Banque Misr) — dated 2026-11-25 (Wednesday close).
-  usd_bank_buy: 54.63
-  usd_bank_sell: 54.73
-  # EGX close — dated 2026-11-25 (Wednesday close).
+  # Dated: 2026-11-26 (Thursday close — BankersToday precise 54.7709/54.9097 + businessmen-eg 54.771/54.91 agree; Youm7 54.75/54.85 minority).
+  usd_cbe_buy: 54.77
+  usd_cbe_sell: 54.91
+  # Bank rates (NBE / Banque Misr) — dated 2026-11-26 (Thursday close — Youm7 + businessmen-eg + pioneersmisr agree 54.77/54.87).
+  usd_bank_buy: 54.77
+  usd_bank_sell: 54.87
+  # EGX close — dated 2026-11-26 (Thursday close — Masrawy/Amwal Alghad/Fana/Cairo24/Shorouk agree: -0.45% / 0.00% / +0.08%).
   # egx_date MUST be updated together with these three values — the page header
   # («إغلاق …») and the change column show this date, and the script never
   # advances it on its own. Format: YYYY-MM-DD.
-  egx_date: "2026-11-25"
-  egx30: 50538.66
-  egx70: 16886.71
-  egx100: 22660.67
-  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-25 (Wednesday close).
-  # NOTE: AlMasryAlYoum shows Sunday's values (34.77/35.71/107.35/131.14/29.36/64.83) — stale snapshot, not adopted.
+  egx_date: "2026-11-26"
+  egx30: 50311.78
+  egx70: 16886.22
+  egx100: 22679.37
+  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-26 (Thursday close).
+  # NOTE: Masrawy + ElBalad + Decypha + Alamalmal + newsworled agree on Thursday's values.
   food_rice: 34.97
-  food_sugar: 34.78
-  food_sunflower: 105.48
-  food_corn: 129.35
-  food_flour: 27.25
-  food_beans: 62.16
-  # Obour wholesale prices (EGP/kg) — dated 2026-11-25 (Wednesday close).
+  food_sugar: 34.59
+  food_sunflower: 107.35
+  food_corn: 131.72
+  food_flour: 27.76
+  food_beans: 62.32
+  # Obour wholesale prices (EGP/kg) — dated 2026-11-26 (Thursday close — Masrawy + ElWatan agree; AlMasryAlYoum/Shorouk show Wednesday values, stale).
   # Source: the market's official site, as carried daily by Masrawy
   # (the official site URL itself is still unconfirmed — no auto-scraper
   # until it is resolved; until then these fields are manual like food/CBE).
@@ -53,24 +53,24 @@ manual:
   # NOTE: Masrawy 11:34 + MENAFN agreed on the Sunday snapshot (deltas vs Saturday stated); Cairo24 05:06/banker.news/agrinewz/akhbarelyom republished Thursday's values (stale early reports). Tilapia kept 71–75: بلطي 1 unchanged per agrinewz/banker.news/vet-pen/akhbarelyom; Masrawy 69–77 is a blended range, not بلطي 1.
   # Dated 2026-11-23 (Monday — official site via Masrawy + ElWatan + Cairo24 majority: potato 20–27, onions 15–20, pepper 8–12, orange 10–15, lemon 13–20; tomato 10–15 and zucchini 6–15 and cucumber 7–11 per ElWatan/Cairo24 vs Masrawy 11–15/6–13/7–12; Shorouk/Akhbar Elyoum/sahafa24/egy24 republish Sunday's values — stale).
   # Tilapia kept 71–75: Akhbar Elyoum alone says 73–77 but its vegetable block is Sunday's stale values — unverified, last good value kept.
-  obour_date: "2026-11-25"
+  obour_date: "2026-11-26"
   obour_tomato_lo: 10
   obour_tomato_hi: 15
   obour_potato_lo: 16
   obour_potato_hi: 20
   obour_white_onion_lo: 17
-  obour_white_onion_hi: 21
+  obour_white_onion_hi: 20
   obour_red_onion_lo: 17
-  obour_red_onion_hi: 21
+  obour_red_onion_hi: 20
   obour_zucchini_lo: 7
-  obour_zucchini_hi: 13
+  obour_zucchini_hi: 15
   obour_baladi_cucumber_lo: 7
   obour_baladi_cucumber_hi: 15
   obour_romaine_pepper_lo: 6
-  obour_romaine_pepper_hi: 11
+  obour_romaine_pepper_hi: 12
   obour_baladi_orange_lo: 11
   obour_baladi_orange_hi: 15
-  obour_baladi_lemon_lo: 15
+  obour_baladi_lemon_lo: 16
   obour_baladi_lemon_hi: 20
   obour_tilapia_lo: 71
   obour_tilapia_hi: 75
