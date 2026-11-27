@@ -35,14 +35,14 @@ manual:
   egx30: 50311.78
   egx70: 16886.22
   egx100: 22679.37
-  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-26 (Thursday close).
+  # Food commodities (Cabinet portal via Masrawy) — dated 2026-11-27 (Friday — Masrawy daytime + ElBashayer agree; AlMasryAlYoum shows Sunday's stale snapshot).
   # NOTE: Masrawy + ElBalad + Decypha + Alamalmal + newsworled agree on Thursday's values.
-  food_rice: 34.97
-  food_sugar: 34.59
-  food_sunflower: 107.35
-  food_corn: 131.72
-  food_flour: 27.76
-  food_beans: 62.32
+  food_rice: 34.94
+  food_sugar: 35.99
+  food_sunflower: 110.01
+  food_corn: 130.67
+  food_flour: 28.50
+  food_beans: 62.36
   # Obour wholesale prices (EGP/kg) — dated 2026-11-26 (Thursday close — Masrawy + ElWatan agree; AlMasryAlYoum/Shorouk show Wednesday values, stale).
   # Source: the market's official site, as carried daily by Masrawy
   # (the official site URL itself is still unconfirmed — no auto-scraper
